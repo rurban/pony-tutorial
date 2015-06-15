@@ -242,16 +242,6 @@
                     
                 </li>
             
-                <li class="toctree-l1 ">
-                    <a class="" href="../../packages/builtin">Builtin</a>
-                    
-                </li>
-            
-                <li class="toctree-l1 ">
-                    <a class="" href="../../packages/use-statement">Using a package</a>
-                    
-                </li>
-            
         
 
     
@@ -361,16 +351,16 @@
                     
                         <ul>
                         
-                            <li class="toctree-l2"><a href="#calling-c">Calling C</a></li>
-                            
-                        
-                            <li class="toctree-l2"><a href="#using-ffi">Using FFI</a></li>
+                            <li class="toctree-l2"><a href="#calling-ffi-functions">Calling FFI functions</a></li>
                             
                         
                             <li class="toctree-l2"><a href="#safely-does-it">Safely does it</a></li>
                             
                         
-                            <li class="toctree-l2"><a href="#using-the-libraries">Using the libraries</a></li>
+                            <li class="toctree-l2"><a href="#c-types">C types</a></li>
+                            
+                        
+                            <li class="toctree-l2"><a href="#ffi-functions-raising-errors">FFI functions raising errors</a></li>
                             
                         
                         </ul>
@@ -430,61 +420,63 @@
 </div>
           <div role="main">
             <div class="section">
-              <h1 id="calling-c">Calling C</h1>
-<p>Pony supports integration with other native languages through the
+              <p>Pony supports integration with other native languages through the
 Foreign Function Interface (FFI). The FFI library provides a stable
 and portable API and high level programming interface allowing Pony
 to integrate with native libraries easily.</p>
-<h1 id="using-ffi">Using FFI</h1>
-<p>FFI is built into pony and native libraries may be directly referenced
-in the pony language. There is no need to configure binding wrappers or code generate
-wrapper interfaces.</p>
-<p>For example, pony itself uses FFI to provide SSL support, so lets use that
-as a motivating example.</p>
-<pre><code>// File: packages/net/ssl/sslinit.pony
-
- 1 use &quot;path:/usr/local/opt/libressl/lib&quot; if osx
- 2 use &quot;lib:ssl&quot; if not windows
- 3 use &quot;lib:crypto&quot; if not windows
- 4 use &quot;lib:libssl-32&quot; if windows
- 5 use &quot;lib:libcrypto-32&quot; if windows
- 6
- 7 primitive _SSLInit
- 8   &quot;&quot;&quot;
- 9   This initialises SSL when the program begins.
-10   &quot;&quot;&quot;
-11   fun _init(env: Env) =&gt;
-12     @SSL_load_error_strings[None]()
-13     @SSL_library_init[I32]()
+<p>Note that calling C (or other low level languages) is inherently dangerous. C code fundamentally has access to all memory in the process and can change any of it, either deliberately or due to bugs. This is one of the language's most useful, but also most dangerous, features. Calling well written, bug free, C code will have no ill effects on your program. However, calling buggy or malicious C code or calling C incorrectly can cause your Pony program to go wrong, including corrupting data and crashing. Consequently all of Pony guarantees regarding not crashing, memory safety and concurrent correctness can be voided by calling FFI functions.</p>
+<h1 id="calling-ffi-functions">Calling FFI functions</h1>
+<p>FFI is built into Pony and native libraries may be directly referenced
+in Pony code. There is no need to code or configure bindings, wrappers or interfaces.</p>
+<p>Here's an example of an FFI call in Pony from the standard library. It looks like a normal method call, with just a few differences:</p>
+<pre><code class="pony">@fwrite[U64](data.cstring(), U64(1), data.size(), _handle)
 </code></pre>
 
-<ul>
-<li>In line 1, we provide a path to the library we wish to integrate with</li>
-<li>On OS X, we use a fixed path to a brew installed fork of OpenSSL libressl</li>
-<li>On line 2, we use the standard path on linux or UNIX environments</li>
-<li>On line 3, we include the libcrypto dependency</li>
-<li>On line 4 and 5 we include the windows 32 bit flavors</li>
-</ul>
-<p>If you are integrating with existing libraries, that is it.</p>
+<p>The main difference is the @ symbol before the function name. This is what tells us it's an FFI call. Any time you see an @ in Pony there's an FFI going on.</p>
+<p>The other key difference is that the return type of the function is specified after the function name, in square brackets. This is because the compiler needs to know what type the value returned is (if any), but has no way to determine that, so it needs you to explicitly tell it.</p>
+<p>There are a few unusual things going on with the arguments to this FFI call as well. For the second argument, for which we're passing the value 1, we've had to specify that this is a U64. Again this is because the compiler needs to know what size argument to use, but has no way to determine this.</p>
 <h1 id="safely-does-it">Safely does it</h1>
-<p>Pony will check the signatures used to make sure they are mapped and bound
-correctly to the pony type system. In the example above, on line 13, we are calling the OpenSSL
-SSL_library_init function and returning an <code>I32</code> or 32-bit signed integer.
-We are not passing any arguments from pony into this function.
-As this expression is the last in the function, the result of the call to SSL_library_init
-will be returned to pony, and pony will return it to the caller.</p>
-<p>If there are compiler issues (due to type mismatch) they will be reported.
-If the library cannot be found and loaded, this will be reported.
-If the function being called is not exported or found this will also be reported.</p>
-<h1 id="using-the-libraries">Using the libraries</h1>
-<p>In order to use the libraries we use the FFI call expression form.</p>
-<pre><code>
-11   fun _init(env: Env) =&gt;
-12     @SSL_load_error_strings[None]()
-13     @SSL_library_init[I32]()
+<p><strong>It is VERY important that when calling FFI functions you MUST get the parameter and return types right</strong>. The compiler has no way to know what the native code expects and will just believe whatever you do. Errors here can cause invalid data to be passed to the FFI function or returned to Pony, which can lead to program crashes.</p>
+<p>To help avoid bugs here Pony allows you to specify the type signatures of FFI functions in advance. Whilst you must still get the types correct the arguments you provide at each FFI call site are checked against the declared signature. This means that you must get a type wrong, in the same way, in at least 2 places for a bug to exist. This won't help if the argument types the native code expects are different to what you think they are, but it will protect you against trivial mistakes and simple typos.</p>
+<p>FFI signatures are declared using the <code>use</code> command. Here's an example from the standard library:</p>
+<pre><code class="pony">use @SSL_CTX_ctrl[I32](ctx: Pointer[_SSLContext] tag, op: I32, arg: I32,
+  parg: Pointer[U8] tag) if windows
+
+use @SSL_CTX_ctrl[I64](ctx: Pointer[_SSLContext] tag, op: I32, arg: I64,
+  parg: Pointer[U8] tag) if not windows
+
+class SSLContext val
+  new create() =&gt;
+    // set SSL_OP_NO_SSLv2
+    @SSL_CTX_ctrl(_ctx, 32, 0x01000000, Pointer[U8])
 </code></pre>
 
-<p>In this case we are calling SSL_load_error_strings; which loads the error strings for all crypto functions, and SSL_library_init; which initializes available ciphers and digests.  at initialization (at program start).</p>
+<p>The @ symbol tells us that the use command is an FFI signature declaration. The types specified here are considered authoritative and any FFI calls that differ are considered to be an error.</p>
+<p>Note that we no longer need to specify the return type at the call site, since the signature declaration has already told us what it is. However, it is perfectly acceptable to specify it again if you want to.</p>
+<p>The use @ command can take a condition just like other use commands. This is useful in this case, where the Windows version of SSL_CTX_ctrl has a slightly different signature to other platforms.</p>
+<h1 id="c-types">C types</h1>
+<p>Many C functions require types that don't have an exact equivalent in Pony. A variety of features are provided for these.</p>
+<p>For FFI functions that have no return value (ie they return <code>void</code> in C) the return value specified should be <code>[None]</code>.</p>
+<p>In Pony String is an object with a header and fields, but in C a char* is simply a pointer to character data. The .cstring() function on String provides us with a valid pointer to hand to C. Our fwrite example above makes use of this for the first argument.</p>
+<p>Pony classes corresponds directly to pointers to the class in C.</p>
+<p>For C pointers to simple types, such as U64, the Pony <code>Pointer[]</code> polymorphic type should be used, with a <code>tag</code> capability. <code>Pointer[U8] tag</code> should be used for void*. This can be seen in our SSL_CTX_ctrl example above.</p>
+<p>To pass pointers to values to C an ampersand (&amp;) can be used, just like taking an address in C. This is done in the standard library to pass the address of a U64 to an FFI functions that takes a uint64_t* as an out parameter:</p>
+<pre><code class="pony">var len = U64(0)
+@pcre2_substring_length_bynumber_8[I32](_match, i.u32(), &amp;len)
+</code></pre>
+
+<h1 id="ffi-functions-raising-errors">FFI functions raising errors</h1>
+<p>FFI functions can raise Pony errors. Functions in existing C libraries are very unlikely to do this, but support libraries specifically written for use with Pony may well do.</p>
+<p>FFI calls to functions that <strong>might</strong> raise an error <strong>must</strong> mark it as such by adding a ? after the arguments. For example:</p>
+<pre><code class="pony">@os_send[U64](_event, data.cstring(), data.size()) ? // May raise an error
+</code></pre>
+
+<p>If a signature declaration is used then that must be marked as possibly raising an error in the same way. The FFI call site then does not have to mark it as well, although doing so is allowed.</p>
+<pre><code class="pony">use @os_send[U64](ev: Event, buf: Pointer[U8] tag, len: U64) ?
+
+@os_send(_event, data.cstring(), data.size()) // May raise an error
+</code></pre>
+
 
             </div>
           </div>

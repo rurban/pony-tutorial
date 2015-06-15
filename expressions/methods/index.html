@@ -264,16 +264,6 @@
                     
                 </li>
             
-                <li class="toctree-l1 ">
-                    <a class="" href="../../packages/builtin">Builtin</a>
-                    
-                </li>
-            
-                <li class="toctree-l1 ">
-                    <a class="" href="../../packages/use-statement">Using a package</a>
-                    
-                </li>
-            
         
 
     
@@ -450,7 +440,7 @@
 </code></pre>
 
 <p>The function parameters (if any) are specified in parentheses after the function name. Functions that don't take any parameters still need to have the parentheses.</p>
-<p>Each parameter is given a name and a type. In our example function <code>add</code> has 2 parameters, <code>x</code> and <code>y</code>, both of which are type <code>U32</code>. The values passed to a function call (the <code>1</code> and <code>2</code> in our example) are called arguments and when the call is made they are evaluated and assigned to the parameters. Parameters may not assigned to within the function, they are effectively declared <code>let</code>.</p>
+<p>Each parameter is given a name and a type. In our example function <code>add</code> has 2 parameters, <code>x</code> and <code>y</code>, both of which are type <code>U32</code>. The values passed to a function call (the <code>1</code> and <code>2</code> in our example) are called arguments and when the call is made they are evaluated and assigned to the parameters. Parameters may not be assigned to within the function, they are effectively declared <code>let</code>.</p>
 <p>After the parameters comes the return type. If nothing will be returned this is simply omitted.</p>
 <p>After the return value there's a <code>=&gt;</code> and then finally the function body. The value returned is simply the value of the function body (remember that everything is an expression), which is simply the value of the last command in the function.</p>
 <p>If you want to exit a function early then use the <code>return</code> command. If the function has a return type then you need to provide a value to return. If the function does not have a return type then <code>return</code> should appear on its own, without a value.</p>

@@ -242,16 +242,6 @@
                     
                 </li>
             
-                <li class="toctree-l1 ">
-                    <a class="" href="../../packages/builtin">Builtin</a>
-                    
-                </li>
-            
-                <li class="toctree-l1 ">
-                    <a class="" href="../../packages/use-statement">Using a package</a>
-                    
-                </li>
-            
         
 
     
@@ -421,139 +411,32 @@
 </div>
           <div role="main">
             <div class="section">
-              <h1 id="linking-to-c-libraries">Linking to C libraries</h1>
-<p>The FFI support in pony uses the C application binary interface (ABI) to
-interface with native code. The C ABI is a calling convention, one of many,
-that allow objects from different programming languages to be used together.</p>
-<p>In order to motivate discussion, let us look at a sample C function we may
-wish to provide to pony. A Jump Consistent Hash, for example, could be provided
-in pure pony as follows:</p>
-<pre><code>// Jump consistent hashing in pony, with an inline pseudo random generator
-
-fun jch(key: U64, buckets: I64): I32 =&gt;
-  var k = key
-  var b = I64(0)
-  var j = I64(0)
-
-  while j &lt; buckets do
-    b = j
-    k = (k * 2862933555777941757) + 1
-    j = ((b + 1).f64() * (U32(1 &lt;&lt; 31).f64() / ((key &gt;&gt; 33) + 1).f64())).i64()
-  end
-
-  b.i32()
+              <p>If Pony code calls FFI functions, then those functions, or rather the libraries containing them, must be linked into the Pony program.</p>
+<h1 id="linking-to-c-libraries">Linking to C libraries</h1>
+<p>To link an external library to Pony code another variant of the use command is used. The "lib" specifier is used to tell the compiler you want to link to a library. For example:</p>
+<pre><code class="pony">use &quot;lib:foo&quot;
 </code></pre>
 
-<p>Let us say we wish to compare the pure pony performance to an existing C function with
-the following header:</p>
-<pre><code>
-#ifndef __JCH_H_
-#define __JCH_H_
+<p>As with other use commands a condition may be specified. This is particularly useful when the library has slightly different names on different platforms.</p>
+<p>Here's a real example from the standard library:</p>
+<pre><code class="pony">use &quot;path:/usr/local/opt/libressl/lib&quot; if osx
+use &quot;lib:ssl&quot; if not windows
+use &quot;lib:crypto&quot; if not windows
+use &quot;lib:libssl-32&quot; if windows
+use &quot;lib:libcrypto-32&quot; if windows
 
-int32_t jch_chash(uint64_t key, uint32_t num_buckets);
-
-#endif
+primitive _SSLInit
+  &quot;&quot;&quot;
+  This initialises SSL when the program begins.
+  &quot;&quot;&quot;
+  fun _init(env: Env) =&gt;
+    @SSL_load_error_strings[None]()
+    @SSL_library_init[I32]()
 </code></pre>
 
-<p>Implemented somewhat as follows:</p>
-<pre><code>
-#include &lt;stdint.h&gt;
-#include &lt;limits.h&gt;
-#include &quot;math.h&quot;
-
-// a reasonably fast, good period, low memory use, xorshift64* based prng
-double lcg_next(uint64_t* x)
-{
-    *x ^= *x &gt;&gt; 12; // a
-    *x ^= *x &lt;&lt; 25; // b
-    *x ^= *x &gt;&gt; 27; // c
-    return (double)(*x * 2685821657736338717LL) / ULONG_MAX;
-}
-
-// jump consistent hash
-extern &quot;C&quot;
-int32_t jch_chash(uint64_t key, uint32_t num_buckets)
-{
-    uint64_t seed = key; int b = -1; int32_t j = 0;
-
-    do {
-        b = j;
-        double r = lcg_next(&amp;seed);
-        j = floor( (b + 1)/r );
-    } while(j &lt; num_buckets);
-
-    return (int32_t)b;
-}
-</code></pre>
-
-<p>We need to compile the native code to a shared library</p>
-<pre><code>clang++ -fPIC -Wall -Wextra -O3 -g -MM jch.c &gt;jch.d
-clang++ -fPIC -Wall -Wextra -O3 -g   -c -o jch.o jch.c
-clang++ -shared -lm -o libjch.dylib jch.o
-</code></pre>
-
-<p>We can then integrate and use with pony through adding the library parent directory
-to the path via the pony compiler or with a path statement in the use statement in
-pony code, as we saw with the motivating OpenSSL example.</p>
-<pre><code>ponyc -path=. jchffi
-Building jchffi
-Building builtin
-Building collections
-Building random
-Generating
-Optimising
-Writing ./jchffi.o
-Linking ./jchffi1
-</code></pre>
-
-<p>We have now compiled a native executable integrating pony and our library.</p>
-<pre><code>./jchffi1
-1: 883122
-2: 116414
-3: 565373
-4: 9712
-5: 898336
-6: 717398
-7: 170247
-8: 406558
-9: 282929
-10: 405987
-11: 21240
-12: 909403
-13: 385276
-14: 674456
-15: 100483
-16: 182121
-17: 926262
-18: 206798
-19: 898787
-</code></pre>
-
-<p>And the mainline that puts it all together:</p>
-<pre><code>&quot;&quot;&quot; This is an example of pony integrating with native code via the builtin FFI support &quot;&quot;&quot;
-
-use &quot;lib:jch&quot; if osx
-use &quot;collections&quot;
-use &quot;random&quot;
-use @jch_chash[I32](hash : U64 , bucket_size : U32)
-
-actor Main
-  var _env : Env
-
-  new create(env : Env) =&gt;
-    _env = env
-
-    let bucket_size : U32 = 1000000
-    var random = MT
-
-    for i in Range[U64](1 , 20) do
-        let r : U64 = random.next()
-        let hash = @jch_chash[U32](i, bucket_size)
-        _env.out.print(i.string() + &quot;: &quot; + hash.string())
-    end
-</code></pre>
-
-<p>That was just a little too easy for comfort, amirite?</p>
+<p>On Windows we use the libraries "libssl-32" and "libcrypto-32" and on other platforms we use "ssl" and "crypto". These contain the FFI functions SSL_library_init and SSL_load_error_strings (amongst others).</p>
+<p>By default the Pony compiler will look for the libraries to link in the standard places, however that is defined on the build platform. However, it may be necessary to look in extra places. The <code>use "path:..."</code> command allows this. The specified path is added to the library search paths for the remainder of the current file. The example above uses this to add the path "/usr/local/opt/libressl/lib" for OSX. This is required because the library is provided by brew, which installs things outside the standard library search paths.</p>
+<p>If you are integrating with existing libraries, that is all you need to do.</p>
 
             </div>
           </div>

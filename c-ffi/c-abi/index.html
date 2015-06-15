@@ -242,16 +242,6 @@
                     
                 </li>
             
-                <li class="toctree-l1 ">
-                    <a class="" href="../../packages/builtin">Builtin</a>
-                    
-                </li>
-            
-                <li class="toctree-l1 ">
-                    <a class="" href="../../packages/use-statement">Using a package</a>
-                    
-                </li>
-            
         
 
     
@@ -371,6 +361,9 @@
                     
                         <ul>
                         
+                            <li class="toctree-l2"><a href="#writing-a-c-library-for-pony">Writing a C library for Pony</a></li>
+                            
+                        
                         </ul>
                     
                 </li>
@@ -418,7 +411,104 @@
 </div>
           <div role="main">
             <div class="section">
-              
+              <p>The FFI support in pony uses the C application binary interface (ABI) to
+interface with native code. The C ABI is a calling convention, one of many,
+that allow objects from different programming languages to be used together.</p>
+<h1 id="writing-a-c-library-for-pony">Writing a C library for Pony</h1>
+<p>Writing your own C library for use by Pony is almost as easy as using existing libraries.</p>
+<p>Let's look at a complete example of a C function we may wish to provide to Pony. A Jump Consistent Hash, for example, could be provided in pure Pony as follows:</p>
+<pre><code class="pony">// Jump consistent hashing in pony, with an inline pseudo random generator
+
+fun jch(key: U64, buckets: I64): I32 =&gt;
+  var k = key
+  var b = I64(0)
+  var j = I64(0)
+
+  while j &lt; buckets do
+    b = j
+    k = (k * 2862933555777941757) + 1
+    j = ((b + 1).f64() * (U32(1 &lt;&lt; 31).f64() / ((key &gt;&gt; 33) + 1).f64())).i64()
+  end
+
+  b.i32()
+</code></pre>
+
+<p>Let's say we wish to compare the pure Pony performance to an existing C function with the following header:</p>
+<pre><code class="C">#ifndef __JCH_H_
+#define __JCH_H_
+
+extern &quot;C&quot;
+{
+  int32_t jch_chash(uint64_t key, uint32_t num_buckets);
+}
+
+#endif
+</code></pre>
+
+<p>Note the use of <code>extern "C"</code>. If the library is built as C++ then we need to tell the compiler not to mangle the function name, otherwise Pony won't be able to find it. For libraries built as C this is not needed, of course.</p>
+<p>The implemented would be something like:</p>
+<pre><code class="C">#include &lt;stdint.h&gt;
+#include &lt;limits.h&gt;
+#include &quot;math.h&quot;
+
+// A reasonably fast, good period, low memory use, xorshift64* based prng
+double lcg_next(uint64_t* x)
+{
+  *x ^= *x &gt;&gt; 12;
+  *x ^= *x &lt;&lt; 25;
+  *x ^= *x &gt;&gt; 27;
+  return (double)(*x * 2685821657736338717LL) / ULONG_MAX;
+}
+
+// Jump consistent hash
+int32_t jch_chash(uint64_t key, uint32_t num_buckets)
+{
+  uint64_t seed = key;
+  int b = -1;
+  int32_t j = 0;
+
+  do {
+    b = j;
+    double r = lcg_next(&amp;seed);
+    j = floor((b + 1)/r);
+  } while(j &lt; num_buckets);
+
+  return (int32_t)b;
+}
+</code></pre>
+
+<p>We need to compile the native code to a shared library. This example is for OSX. The exact details may vary on other platforms.</p>
+<pre><code>clang++ -fPIC -Wall -Wextra -O3 -g -MM jch.c &gt;jch.d
+clang++ -fPIC -Wall -Wextra -O3 -g   -c -o jch.o jch.c
+clang++ -shared -lm -o libjch.dylib jch.o
+</code></pre>
+
+<p>The Pony code to use this new C library is just like the code we've already seen for using C libraries.</p>
+<pre><code class="pony">&quot;&quot;&quot; This is an example of pony integrating with native code via the builtin FFI support &quot;&quot;&quot;
+
+use &quot;lib:jch&quot;
+use &quot;collections&quot;
+use &quot;random&quot;
+use @jch_chash[I32](hash: U64, bucket_size: U32)
+
+actor Main
+  var _env: Env
+
+  new create(env: Env) =&gt;
+    _env = env
+
+    let bucket_size: U32 = 1000000
+    var random = MT
+
+    for i in Range[U64](1, 20) do
+        let r: U64 = random.next()
+        let hash = @jch_chash(i, bucket_size)
+        _env.out.print(i.string() + &quot;: &quot; + hash.string())
+    end
+</code></pre>
+
+<p>We can now use ponyc to compile a native executable integrating pony and our C library. And that's all we need to do.</p>
+
             </div>
           </div>
           <footer>

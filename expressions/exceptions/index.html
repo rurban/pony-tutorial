@@ -254,7 +254,7 @@
         
             <ul>
             
-                <li class="toctree-l3"><a href="#raising-and-handling">Raising and handling</a></li>
+                <li class="toctree-l3"><a href="#raising-and-handling-errors">Raising and handling errors</a></li>
                 
             
                 <li class="toctree-l3"><a href="#partial-functions">Partial functions</a></li>
@@ -425,28 +425,6 @@
           
             <li>
     <ul class="subnav">
-    <li><span>Memory management</span></li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../garbage-collection/memory-allocation/">Memory allocation</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../garbage-collection/garbage-collection/">Garbage collection</a>
-        
-    </li>
-
-        
-    </ul>
-<li>
-          
-            <li>
-    <ul class="subnav">
     <li><span>C FFI</span></li>
 
         
@@ -467,6 +445,28 @@
             
     <li class="toctree-l1 ">
         <a class="" href="../../c-ffi/c-abi/">C abi</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>The Runtime</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../runtime/memory-allocation/">Memory allocation</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../runtime/garbage-collection/">Garbage collection</a>
         
     </li>
 
@@ -518,7 +518,7 @@
             <div class="section">
               
                 <p>Pony provides a simple exception mechanism to aid error handling. At any point the code may decide to declare an <code>error</code> has occured. Code execution halts at that point and the call chain is unwound until the nearest enclosing error handler is found. This is all checked at compile time so errors cannot cause the whole program to crash.</p>
-<h1 id="raising-and-handling">Raising and handling</h1>
+<h1 id="raising-and-handling-errors">Raising and handling errors</h1>
 <p>An error is raised with the command <code>error</code>. Error handlers are declared using the try-else syntax.</p>
 <pre><code class="pony">try
   callA()

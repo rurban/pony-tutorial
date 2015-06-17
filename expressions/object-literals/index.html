@@ -268,6 +268,18 @@
         
             <ul>
             
+                <li class="toctree-l3"><a href="#whats-this-look-like-then">What's this look like, then?</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#lambdas">Lambdas</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#actor-literals">Actor literals</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#primitive-literals">Primitive literals</a></li>
+                
+            
             </ul>
         
     </li>
@@ -406,10 +418,25 @@
 <li>
           
             <li>
+    <ul class="subnav">
+    <li><span>Memory management</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../garbage-collection/memory-allocation/">Memory allocation</a>
+        
+    </li>
+
+        
+            
     <li class="toctree-l1 ">
         <a class="" href="../../garbage-collection/garbage-collection/">Garbage collection</a>
         
     </li>
+
+        
+    </ul>
 <li>
           
             <li>
@@ -484,7 +511,58 @@
           <div role="main">
             <div class="section">
               
-                
+                <p>Sometimes it's really convenient to be able to write a whole object inline. In Pony, this is called an object literal, and it does pretty much exactly what an object literal in JavaScript does: it creates an object that you can use immediately.</p>
+<p>But Pony is statically typed, so an object literal also creates an anonymous type that the object literal fulfills. This is similar to anonymous classes in Java and C#. In Pony, an anonymous type can provide any number of traits and interfaces.</p>
+<h1 id="whats-this-look-like-then">What's this look like, then?</h1>
+<p>It basically looks like any other type definition, but with some small differences. Here's a simple one:</p>
+<pre><code class="pony">object
+  fun apply(): String =&gt; &quot;hi&quot;
+end
+</code></pre>
+
+<p>Ok, that's pretty trivial. Let's extend it so that it explicitly provides an interface, so that the compiler will make sure the anonymous type fulfills that interface. You can use the same notation to provide traits as well.</p>
+<pre><code class="pony">object is Hashable
+  fun apply(): String =&gt; &quot;hi&quot;
+  fun hash(): U64 =&gt; this().hash()
+end
+</code></pre>
+
+<p>What we can't do is specify constructors in an object literal, because literal <em>is</em> the constructor. So how do we assign to fields? Well, we just assign to them. For example:</p>
+<pre><code class="pony">class Foo
+  fun foo(str: String): Hashable =&gt;
+    object is Hashable
+      let s: String = str
+      fun apply(): String =&gt; s
+      fun hash(): U64 =&gt; s.hash()
+    end
+</code></pre>
+
+<p>When we assign to a field in the constructor, we are <em>capturing</em> from the lexical scope the object literal is in. Pretty fun stuff! It lets us have arbitrarily complex <strong>closures</strong> that can even have multiple entry points (i.e. functions you can call on a closure).</p>
+<p>An object literal is always returned as a <code>ref</code>, like a default construtor on a class. To get another capability (<code>iso</code>, <code>val</code>, etc.), you can wrap the object literal in a <code>recover</code> expression.</p>
+<h1 id="lambdas">Lambdas</h1>
+<p>Arbitrarily complex closures are nice, but sometimes we just want a simple closure. In Pony, you can use the <code>lambda</code> keyword for that.</p>
+<pre><code class="pony">lambda(s: String): String =&gt; &quot;lambda: &quot; + s end
+</code></pre>
+
+<p>This produces the same code as:</p>
+<pre><code class="pony">object
+  fun apply(s: String): String =&gt; &quot;lambda: &quot; + s
+end
+</code></pre>
+
+<h1 id="actor-literals">Actor literals</h1>
+<p>Normally, an object literal is an instance of an anonymous class. To make it an instance of an anonymous actor, just include one or more behaviours in the object literal definition.</p>
+<pre><code class="pony">object
+  let stream: Stream = env.out
+  be apply() =&gt; stream.print(&quot;hi&quot;)
+end
+</code></pre>
+
+<p>An actor literal is always returned as a <code>tag</code>.</p>
+<h1 id="primitive-literals">Primitive literals</h1>
+<p>When an anonymous type has no fields and no behaviours (like, for example, an object literal declared with the <code>lambda</code> keyword), the compiler generates it as an anonymous primitive. This means no memory allocation is needed to generate an instance of that type.</p>
+<p>In other words, a lambda in Pony has no memory allocation overhead. Nice.</p>
+<p>A primitive literal is always returned as a <code>val</code>.</p>
               
             </div>
           </div>

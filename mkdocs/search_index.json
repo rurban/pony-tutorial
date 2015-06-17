@@ -712,13 +712,53 @@
         }, 
         {
             "location": "/expressions/object-literals/", 
-            "text": "", 
+            "text": "Sometimes it's really convenient to be able to write a whole object inline. In Pony, this is called an object literal, and it does pretty much exactly what an object literal in JavaScript does: it creates an object that you can use immediately.\n\n\nBut Pony is statically typed, so an object literal also creates an anonymous type that the object literal fulfills. This is similar to anonymous classes in Java and C#. In Pony, an anonymous type can provide any number of traits and interfaces.\n\n\nWhat's this look like, then?\n\n\nIt basically looks like any other type definition, but with some small differences. Here's a simple one:\n\n\nobject\n  fun apply(): String =\n \nhi\n\nend\n\n\n\n\nOk, that's pretty trivial. Let's extend it so that it explicitly provides an interface, so that the compiler will make sure the anonymous type fulfills that interface. You can use the same notation to provide traits as well.\n\n\nobject is Hashable\n  fun apply(): String =\n \nhi\n\n  fun hash(): U64 =\n this().hash()\nend\n\n\n\n\nWhat we can't do is specify constructors in an object literal, because literal \nis\n the constructor. So how do we assign to fields? Well, we just assign to them. For example:\n\n\nclass Foo\n  fun foo(str: String): Hashable =\n\n    object is Hashable\n      let s: String = str\n      fun apply(): String =\n s\n      fun hash(): U64 =\n s.hash()\n    end\n\n\n\n\nWhen we assign to a field in the constructor, we are \ncapturing\n from the lexical scope the object literal is in. Pretty fun stuff! It lets us have arbitrarily complex \nclosures\n that can even have multiple entry points (i.e. functions you can call on a closure).\n\n\nAn object literal is always returned as a \nref\n, like a default construtor on a class. To get another capability (\niso\n, \nval\n, etc.), you can wrap the object literal in a \nrecover\n expression.\n\n\nLambdas\n\n\nArbitrarily complex closures are nice, but sometimes we just want a simple closure. In Pony, you can use the \nlambda\n keyword for that.\n\n\nlambda(s: String): String =\n \nlambda: \n + s end\n\n\n\n\nThis produces the same code as:\n\n\nobject\n  fun apply(s: String): String =\n \nlambda: \n + s\nend\n\n\n\n\nActor literals\n\n\nNormally, an object literal is an instance of an anonymous class. To make it an instance of an anonymous actor, just include one or more behaviours in the object literal definition.\n\n\nobject\n  let stream: Stream = env.out\n  be apply() =\n stream.print(\nhi\n)\nend\n\n\n\n\nAn actor literal is always returned as a \ntag\n.\n\n\nPrimitive literals\n\n\nWhen an anonymous type has no fields and no behaviours (like, for example, an object literal declared with the \nlambda\n keyword), the compiler generates it as an anonymous primitive. This means no memory allocation is needed to generate an instance of that type.\n\n\nIn other words, a lambda in Pony has no memory allocation overhead. Nice.\n\n\nA primitive literal is always returned as a \nval\n.", 
             "title": "Object literals"
         }, 
         {
+            "location": "/expressions/object-literals/#whats-this-look-like-then", 
+            "text": "It basically looks like any other type definition, but with some small differences. Here's a simple one:  object\n  fun apply(): String =   hi \nend  Ok, that's pretty trivial. Let's extend it so that it explicitly provides an interface, so that the compiler will make sure the anonymous type fulfills that interface. You can use the same notation to provide traits as well.  object is Hashable\n  fun apply(): String =   hi \n  fun hash(): U64 =  this().hash()\nend  What we can't do is specify constructors in an object literal, because literal  is  the constructor. So how do we assign to fields? Well, we just assign to them. For example:  class Foo\n  fun foo(str: String): Hashable = \n    object is Hashable\n      let s: String = str\n      fun apply(): String =  s\n      fun hash(): U64 =  s.hash()\n    end  When we assign to a field in the constructor, we are  capturing  from the lexical scope the object literal is in. Pretty fun stuff! It lets us have arbitrarily complex  closures  that can even have multiple entry points (i.e. functions you can call on a closure).  An object literal is always returned as a  ref , like a default construtor on a class. To get another capability ( iso ,  val , etc.), you can wrap the object literal in a  recover  expression.", 
+            "title": "What's this look like, then?"
+        }, 
+        {
+            "location": "/expressions/object-literals/#lambdas", 
+            "text": "Arbitrarily complex closures are nice, but sometimes we just want a simple closure. In Pony, you can use the  lambda  keyword for that.  lambda(s: String): String =   lambda:   + s end  This produces the same code as:  object\n  fun apply(s: String): String =   lambda:   + s\nend", 
+            "title": "Lambdas"
+        }, 
+        {
+            "location": "/expressions/object-literals/#actor-literals", 
+            "text": "Normally, an object literal is an instance of an anonymous class. To make it an instance of an anonymous actor, just include one or more behaviours in the object literal definition.  object\n  let stream: Stream = env.out\n  be apply() =  stream.print( hi )\nend  An actor literal is always returned as a  tag .", 
+            "title": "Actor literals"
+        }, 
+        {
+            "location": "/expressions/object-literals/#primitive-literals", 
+            "text": "When an anonymous type has no fields and no behaviours (like, for example, an object literal declared with the  lambda  keyword), the compiler generates it as an anonymous primitive. This means no memory allocation is needed to generate an instance of that type.  In other words, a lambda in Pony has no memory allocation overhead. Nice.  A primitive literal is always returned as a  val .", 
+            "title": "Primitive literals"
+        }, 
+        {
             "location": "/expressions/partial-application/", 
-            "text": "", 
+            "text": "Partial application lets us supply \nsome\n of the arguments to a constructor, function, or behaviour, and get back something that lets us supply the rest of the arguments later.\n\n\nA simple case\n\n\nA simple case is to create a \"callback\" function. For example:\n\n\nclass Foo\n  var _f: F64 = 0\n\n  fun addmul(add: F64, mul: F64): F64 =\n\n    _f = (_f + add) * mul\n\nclass Bar\n  fun apply() =\n\n    let foo = Foo\n    let f = foo~addmul(3)\n    f(4)\n\n\n\n\nThis is a bit of a silly example, but hopefully the idea is clear. We partially apply the \naddmul\n function on \nfoo\n, binding the receiver to \nfoo\n and the \nadd\n argument to \n3\n. We get back an object, \nf\n, that has an \napply\n method that takes a \nmul\n argument. When it's called, it in turn calls \nfoo.addmul(3, mul)\n.\n\n\nWe can also bind all the arguments:\n\n\nlet f = foo~addmul(3, 4)\nf()\n\n\n\n\nOr even none of the arguments:\n\n\nlet f = foo~addmul()\nf(3, 4)\n\n\n\n\nOut of order arguments\n\n\nPartial application with named arguments allows binding arguments in any order, not just left to right. For example:\n\n\nlet f = foo~addmul(where mul = 4)\nf(3)\n\n\n\n\nHere, we bound the \nmul\n argument, but left \nadd\n unbound.\n\n\nPartially applying a partial application\n\n\nSince partial application results in an object with an apply method, we can partially apply the result!\n\n\nlet f = foo~addmul()\nlet f2 = f~apply(where mul = 4)\nf2(3)\n\n\n\n\nPartial application is an object literal\n\n\nUnder the hood, we're assembling an object literal for partial application. It captures some of the lexical scope as fields, and has an \napply\n method that takes some, possibly reduced, number of arguments. This is actually done as sugar, by rewriting the abstract syntax tree for partial application to be an object literal, before code generation.\n\n\nThat means partial application results in an anonymous class, and returns a \nref\n. If you need another capability, you can wrap partial application in a \nrecover\n expression.", 
             "title": "Partial application"
+        }, 
+        {
+            "location": "/expressions/partial-application/#a-simple-case", 
+            "text": "A simple case is to create a \"callback\" function. For example:  class Foo\n  var _f: F64 = 0\n\n  fun addmul(add: F64, mul: F64): F64 = \n    _f = (_f + add) * mul\n\nclass Bar\n  fun apply() = \n    let foo = Foo\n    let f = foo~addmul(3)\n    f(4)  This is a bit of a silly example, but hopefully the idea is clear. We partially apply the  addmul  function on  foo , binding the receiver to  foo  and the  add  argument to  3 . We get back an object,  f , that has an  apply  method that takes a  mul  argument. When it's called, it in turn calls  foo.addmul(3, mul) .  We can also bind all the arguments:  let f = foo~addmul(3, 4)\nf()  Or even none of the arguments:  let f = foo~addmul()\nf(3, 4)", 
+            "title": "A simple case"
+        }, 
+        {
+            "location": "/expressions/partial-application/#out-of-order-arguments", 
+            "text": "Partial application with named arguments allows binding arguments in any order, not just left to right. For example:  let f = foo~addmul(where mul = 4)\nf(3)  Here, we bound the  mul  argument, but left  add  unbound.", 
+            "title": "Out of order arguments"
+        }, 
+        {
+            "location": "/expressions/partial-application/#partially-applying-a-partial-application", 
+            "text": "Since partial application results in an object with an apply method, we can partially apply the result!  let f = foo~addmul()\nlet f2 = f~apply(where mul = 4)\nf2(3)", 
+            "title": "Partially applying a partial application"
+        }, 
+        {
+            "location": "/expressions/partial-application/#partial-application-is-an-object-literal", 
+            "text": "Under the hood, we're assembling an object literal for partial application. It captures some of the lexical scope as fields, and has an  apply  method that takes some, possibly reduced, number of arguments. This is actually done as sugar, by rewriting the abstract syntax tree for partial application to be an object literal, before code generation.  That means partial application results in an anonymous class, and returns a  ref . If you need another capability, you can wrap partial application in a  recover  expression.", 
+            "title": "Partial application is an object literal"
         }, 
         {
             "location": "/actors/behaviours/", 
@@ -819,6 +859,11 @@
             "location": "/patterns/patterns/", 
             "text": "", 
             "title": "Patterns"
+        }, 
+        {
+            "location": "/garbage-collection/memory-allocation/", 
+            "text": "", 
+            "title": "Memory allocation"
         }, 
         {
             "location": "/garbage-collection/garbage-collection/", 

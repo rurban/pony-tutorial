@@ -294,11 +294,19 @@
     
 
     
+        
+    <url>
+     <loc>None/garbage-collection/memory-allocation/</loc>
+     <lastmod>2015-06-17</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
     <url>
      <loc>None/garbage-collection/garbage-collection/</loc>
      <lastmod>2015-06-17</lastmod>
      <changefreq>daily</changefreq>
     </url>
+        
     
 
     

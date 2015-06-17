@@ -160,76 +160,6 @@
           
             <li>
     <ul class="subnav">
-    <li><span>Capabilities</span></li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../introduction/">Introduction</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../guarantees/">Guarantees</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../aliasing/">Aliasing</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../combining-capabilities/">Combining capabilities</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 current">
-        <a class="current" href="./">Passing and sharing</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#passing">Passing</a></li>
-                
-            
-                <li class="toctree-l3"><a href="#sharing">Sharing</a></li>
-                
-            
-                <li class="toctree-l3"><a href="#capabilities-that-cant-be-sent">Capabilities that can't be sent</a></li>
-                
-            
-            </ul>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../capability-subtyping/">Capability subtyping</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../arrow-types/">Arrow types</a>
-        
-    </li>
-
-        
-    </ul>
-<li>
-          
-            <li>
-    <ul class="subnav">
     <li><span>Expressions</span></li>
 
         
@@ -285,6 +215,83 @@
             
     <li class="toctree-l1 ">
         <a class="" href="../../expressions/partial-application/">Partial application</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Capabilities</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../object-capabilities/">Object capabilities</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../reference-capabilities/">Reference capabilities</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../guarantees/">Guarantees</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../aliasing/">Aliasing</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../combining-capabilities/">Combining capabilities</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Passing and sharing</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#passing">Passing</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#sharing">Sharing</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#reference-capabilities-that-cant-be-sent">Reference capabilities that can't be sent</a></li>
+                
+            
+            </ul>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../capability-subtyping/">Capability subtyping</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../arrow-types/">Arrow types</a>
         
     </li>
 
@@ -508,9 +515,9 @@
           <div role="main">
             <div class="section">
               
-                <p>Capabilities make it safe to both <strong>pass</strong> mutable data between actors and to <strong>share</strong> immutable data amongst actors. Not only that, they make it safe to do it with no copying, no locks, in fact no runtime overhead at all.</p>
+                <p>Reference capabilities make it safe to both <strong>pass</strong> mutable data between actors and to <strong>share</strong> immutable data amongst actors. Not only that, they make it safe to do it with no copying, no locks, in fact no runtime overhead at all.</p>
 <h1 id="passing">Passing</h1>
-<p>For an object to be mutable, we need to be sure that no <em>other</em> actor can read from or write to that object. The three mutable capabilities (<code>iso</code>, <code>trn</code>, and <code>ref</code>) all make that guarantee.</p>
+<p>For an object to be mutable, we need to be sure that no <em>other</em> actor can read from or write to that object. The three mutable reference capabilities (<code>iso</code>, <code>trn</code>, and <code>ref</code>) all make that guarantee.</p>
 <p>But what if we want to pass a mutable object from one actor to another? To do that, we need to be sure that the actor that is <em>sending</em> the mutable object also <em>gives up</em> the ability to both read from and write to that object.</p>
 <p>This is exactly what <code>iso</code> does. It is <em>read and write unique</em>, there can only be one reference at a time that can be used for reading or writing. If you send an <code>iso</code> object to another actor, you will be giving up the ability to read from or write to that object.</p>
 <p><strong>So I should use <code>iso</code> when I want to pass a mutable object between actors?</strong> Yes! If you don't need to pass it, you can just use <code>ref</code> instead.</p>
@@ -522,12 +529,12 @@
 </ol>
 <p>The first guarantee is exactly what <code>val</code> does. It is <em>globally immutable</em>, so we know that <em>no</em> actor can ever write to that object. As a result, you can freely send <code>val</code> objects to other actors, without needing to give up the ability to read from that object.</p>
 <p><strong>So I should use <code>val</code> when I want to share an immutable object amongst actors?</strong> Yes! If you don't need to share it, you can just use <code>ref</code> instead, or <code>box</code> if you want it to be immutable.</p>
-<p>The second guarantee is what <code>tag</code> does. Not the part about only one actor writing (that's guaranteed by any mutable capability), but the part about not being able to read from or write to an object. That means you can freely pass <code>tag</code> objects to other actors, without needing to give up the ability to read from or write to that object.</p>
+<p>The second guarantee is what <code>tag</code> does. Not the part about only one actor writing (that's guaranteed by any mutable reference capability), but the part about not being able to read from or write to an object. That means you can freely pass <code>tag</code> objects to other actors, without needing to give up the ability to read from or write to that object.</p>
 <p><strong>What's the point in sending a tag reference to another actor if it can't then read of write the fields?</strong> Because <code>tag</code> <strong>can</strong> be used to <strong>identify</strong> objects and sometimes that's all you need. Also, if the object is an actor you can call behaviours on it even though you only have a <code>tag</code>.</p>
 <p><strong>So I should use <code>tag</code> when I want to share the identity of a mutable object amongst actors?</strong> Yes! Or, really, the identity of anything, whether it's mutable, immutable, or even an actor.</p>
-<h1 id="capabilities-that-cant-be-sent">Capabilities that can't be sent</h1>
+<h1 id="reference-capabilities-that-cant-be-sent">Reference capabilities that can't be sent</h1>
 <p>You may have noticed we didn't mention <code>trn</code>, <code>ref</code>, or <code>box</code> as things you can send to other actors. That's because you can't do it. They don't make the guarantees we need in order to be safe.</p>
-<p>So when should you use those capabilities?</p>
+<p>So when should you use those reference capabilities?</p>
 <ul>
 <li>Use <code>ref</code> when you need to be able to change an object over time. On the other hand, if your program wouldn't be any slower if you used an immutable type instead, you may want to use a <code>val</code> anyway.</li>
 <li>Use <code>box</code> when you don't care whether the object is mutable or immutable. In other words, you want to be able to read from it, but you don't need to write to it or share it with other actors.</li>

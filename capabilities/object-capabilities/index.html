@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Recover and consume - Pony Tutorial</title>
+  <title>Object capabilities - Pony Tutorial</title>
   
 
   <link rel="shortcut icon" href="../../img/favicon.ico">
@@ -21,7 +21,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Recover and consume";
+    var mkdocs_page_name = "Object capabilities";
   </script>
   
   <script src="../../js/jquery-2.1.1.min.js"></script>
@@ -228,57 +228,73 @@
 
         
             
-    <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/object-capabilities/">Object capabilities</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Object capabilities</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#how-is-that-unforgeable">How is that unforgeable?</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#what-about-global-variables">What about global variables?</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#how-does-this-help">How does this help?</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#capabilities-and-concurrency">Capabilities and concurrency</a></li>
+                
+            
+            </ul>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/reference-capabilities/">Reference capabilities</a>
+        <a class="" href="../reference-capabilities/">Reference capabilities</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/guarantees/">Guarantees</a>
+        <a class="" href="../guarantees/">Guarantees</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/aliasing/">Aliasing</a>
+        <a class="" href="../aliasing/">Aliasing</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/combining-capabilities/">Combining capabilities</a>
+        <a class="" href="../combining-capabilities/">Combining capabilities</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/passing-and-sharing/">Passing and sharing</a>
+        <a class="" href="../passing-and-sharing/">Passing and sharing</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/capability-subtyping/">Capability subtyping</a>
+        <a class="" href="../capability-subtyping/">Capability subtyping</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/arrow-types/">Arrow types</a>
+        <a class="" href="../arrow-types/">Arrow types</a>
         
     </li>
 
@@ -293,32 +309,28 @@
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../behaviours/">Behaviours</a>
+        <a class="" href="../../actors/behaviours/">Behaviours</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../capabilities/">Capabilities</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 current">
-        <a class="current" href="./">Recover and consume</a>
-        
-            <ul>
-            
-            </ul>
+        <a class="" href="../../actors/capabilities/">Capabilities</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../arrow-types/">Arrow types</a>
+        <a class="" href="../../actors/recover-and-consume/">Recover and consume</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../actors/arrow-types/">Arrow types</a>
         
     </li>
 
@@ -492,11 +504,11 @@
     
       
         
-          <li>Actors &raquo;</li>
+          <li>Capabilities &raquo;</li>
         
       
     
-    <li>Recover and consume</li>
+    <li>Object capabilities</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -506,7 +518,27 @@
           <div role="main">
             <div class="section">
               
-                
+                <p>Pony's capabilities-secure type system is based on the object-capability model. That sounds complicated, but really it's elegant and simple. The core idea is this:</p>
+<blockquote>
+<p>A capability is an unforgeable token that (a) designates an object and (b) gives the program the authority to perform a specific set of actions on that object.</p>
+</blockquote>
+<p>So what's that token? It's an address. A pointer. A reference. It's just... an object.</p>
+<h1 id="how-is-that-unforgeable">How is that unforgeable?</h1>
+<p>Since Pony has no pointer arithmetic, and is both type-safe and memory-safe, object references can't be "invented" (i.e. forged) by the program. You can only get one by constructing an object, or being passed an object.</p>
+<p><strong>What about the C FFI?</strong> Using the C FFI can break this guarantee. We'll talk about the <strong>C FFI trust boundary</strong> later, and how to control it.</p>
+<h1 id="what-about-global-variables">What about global variables?</h1>
+<p>They're bad! Because you can get them without either constructing them or being passed them.</p>
+<p>Global variables are a form of what is called <em>ambient authority</em>. Another form of ambient authority is unfettered access to the file system.</p>
+<p>Pony has no global variables and no global functions. That doesn't mean all ambient authority is magically gone - we still need to be careful about the file system, for example. Having no globals is necessary, but not sufficient, to eliminate ambient authority.</p>
+<p><strong>Is this like referential transparency?</strong> Yes! It's similar. As long as you think of the receiver as being passed to a method as well (which it is).</p>
+<h1 id="how-does-this-help">How does this help?</h1>
+<p>Instead of having permissions lists, access control lists, or other forms of security, the object-capabilities model means that if you have a reference to an object, you can do things with that object. Simple and effective.</p>
+<p>There's a great paper on how the object-capability model works, and it's pretty easy reading:</p>
+<p><a href="http://srl.cs.jhu.edu/pubs/SRL2003-02.pdf">Capability Myths Demolished</a></p>
+<h1 id="capabilities-and-concurrency">Capabilities and concurrency</h1>
+<p>The object-capability model on its own does not address concurrency. It makes clear <em>what</em> will happen if there is simultaneous access to an object, but it does not proscribe a single method of controlling this.</p>
+<p>Combining capabilities with the actor-model is a good start, and has been done before in languages such as <a href="http://erights.org/">E</a> and Joulle.</p>
+<p>Pony does this and also uses a system of <em>reference capabilities</em> in the type system.</p>
               
             </div>
           </div>
@@ -514,10 +546,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../arrow-types/" class="btn btn-neutral float-right" title="Arrow types"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../reference-capabilities/" class="btn btn-neutral float-right" title="Reference capabilities"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../capabilities/" class="btn btn-neutral" title="Capabilities"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../expressions/partial-application/" class="btn btn-neutral" title="Partial application"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -543,10 +575,10 @@
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../capabilities/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../../expressions/partial-application/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../arrow-types/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../reference-capabilities/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

@@ -160,12 +160,83 @@
           
             <li>
     <ul class="subnav">
+    <li><span>Expressions</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../expressions/variables/">Variables</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../expressions/infix-ops/">Infix ops</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../expressions/control-structures/">Control structures</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../expressions/methods/">Methods</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../expressions/exceptions/">Exceptions</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../expressions/sugar/">Sugar</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../expressions/object-literals/">Object literals</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../expressions/partial-application/">Partial application</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
     <li><span>Capabilities</span></li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../introduction/">Introduction</a>
+        <a class="" href="../object-capabilities/">Object capabilities</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../reference-capabilities/">Reference capabilities</a>
         
     </li>
 
@@ -230,70 +301,6 @@
             
     <li class="toctree-l1 ">
         <a class="" href="../arrow-types/">Arrow types</a>
-        
-    </li>
-
-        
-    </ul>
-<li>
-          
-            <li>
-    <ul class="subnav">
-    <li><span>Expressions</span></li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../expressions/variables/">Variables</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../expressions/infix-ops/">Infix ops</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../expressions/control-structures/">Control structures</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../expressions/methods/">Methods</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../expressions/exceptions/">Exceptions</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../expressions/sugar/">Sugar</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../expressions/object-literals/">Object literals</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../expressions/partial-application/">Partial application</a>
         
     </li>
 
@@ -517,8 +524,8 @@
           <div role="main">
             <div class="section">
               
-                <p>When a field of an object is read, its capability depends both on the capability of the field and the capability of the <strong>origin</strong>, that is, the object the field is being read from.</p>
-<p>This is because all the guarantees that the <strong>origin</strong> capability makes have to be maintained for its fields as well.</p>
+                <p>When a field of an object is read, its reference capability depends both on the reference capability of the field and the reference capability of the <strong>origin</strong>, that is, the object the field is being read from.</p>
+<p>This is because all the guarantees that the <strong>origin</strong> reference capability makes have to be maintained for its fields as well.</p>
 <h1 id="viewpoint-adaptation">Viewpoint adaptation</h1>
 <p>The process of combining origin and field capabilties is called <strong>viewpoint adaptation</strong>. That is, the <strong>origin</strong> has a <strong>viewpoint</strong>, and can "see" its fields only from that <strong>viewpoint</strong>.</p>
 <p>Let's start with a table. This shows how <strong>fields</strong> of each capability "look" to <strong>origins</strong> of each capability.</p>
@@ -606,22 +613,22 @@ class Bar
 <h1 id="explaining-why">Explaining why</h1>
 <p>That table will seem totally natural to you, eventually. But probably not yet. To help it seem natural, let's walk through each cell in the table and explain why it is the way it is.</p>
 <h2 id="reading-from-an-iso-variable">Reading from an <code>iso</code> variable</h2>
-<p>Anything read through an <code>iso</code> origin has to maintain the isolation guarantee that the origin has. The key thing to remember is that the <code>iso</code> can be sent to another actor and it can also become any other capability. So when we read a field, we need to get a result that won't ever break the isolation guarantees that the origin makes, that is, <em>read and write uniqueness</em>.</p>
+<p>Anything read through an <code>iso</code> origin has to maintain the isolation guarantee that the origin has. The key thing to remember is that the <code>iso</code> can be sent to another actor and it can also become any other reference capability. So when we read a field, we need to get a result that won't ever break the isolation guarantees that the origin makes, that is, <em>read and write uniqueness</em>.</p>
 <p>An <code>iso</code> field makes the same guarantees as an <code>iso</code> origin, so that's fine to read. A <code>val</code> field is <em>globally immutable</em>, which means it's always ok to read it, no matter what the origin is (well, other than <code>tag</code>).</p>
-<p>Everything else, though, can break our isolation guarantees. That's why other capabilities are seen as <code>tag</code>: it's the only type that is neither readable nor writeable.</p>
+<p>Everything else, though, can break our isolation guarantees. That's why other reference capabilities are seen as <code>tag</code>: it's the only type that is neither readable nor writeable.</p>
 <h2 id="reading-from-a-trn-variable">Reading from a <code>trn</code> variable</h2>
 <p>This is like <code>iso</code>, but with a weaker guarantee (<em>write uniqueness</em> as opposed to <em>read and write uniqueness</em>). That makes a big difference, since now we can return something readable when we enforce our guarantees.</p>
 <p>An <code>iso</code> field makes stronger guarantees than a <code>trn</code> origin, and a <code>trn</code> field makes the same guarantees, so they're fine to read. A <code>val</code> field is <em>globally immutable</em>, so that's fine too. A <code>box</code> field is readable, and we only guarantee <em>write uniqueness</em>, so that's fine too.</p>
-<p>A <code>ref</code> field, though, would allow writing. So instead we return a <code>box</code> capability.</p>
+<p>A <code>ref</code> field, though, would allow writing. So instead we return a <code>box</code>.</p>
 <h2 id="reading-from-a-ref-variable">Reading from a <code>ref</code> variable</h2>
 <p>A <code>ref</code> origin doesn't modify its fields at all. This is because a <code>ref</code> origin doesn't make any guarantees that are incompatible with its fields.</p>
 <h2 id="reading-from-a-val-variable">Reading from a <code>val</code> variable</h2>
 <p>A <code>val</code> origin is deeply and globally immutable, so all of its fields are also <code>val</code>. The only exception is a <code>tag</code> field. Since we can't read from it, we also can't guarantee that nobody can write to it, so it stays <code>tag</code>.</p>
 <h2 id="reading-from-a-box-variable">Reading from a <code>box</code> variable</h2>
 <p>A <code>box</code> variable is locally immutable. This means it's possible that it may be mutated through some other variable (a <code>trn</code> or a <code>ref</code>), but it's also possible that our <code>box</code> variable is an alias of some <code>val</code> variable.</p>
-<p>When we read a field, we need to return a capability that is compatible with the field, but is also locally immutable.</p>
-<p>An <code>iso</code> field is returned as a <code>tag</code> because no locally immutable capability can maintain its isolation guarantees. A <code>val</code> field is returned as a <code>val</code> because global immutability is a stronger guarantee than local immutability. A <code>box</code> field makes the same local immutability guarantee as its origin, so that's also fine.</p>
-<p>For <code>trn</code> and <code>ref</code> we need to return a locally immutable capability that doesn't violate any guarantees the field makes. In both cases, we can return <code>box</code>.</p>
+<p>When we read a field, we need to return a reference capability that is compatible with the field, but is also locally immutable.</p>
+<p>An <code>iso</code> field is returned as a <code>tag</code> because no locally immutable reference capability can maintain its isolation guarantees. A <code>val</code> field is returned as a <code>val</code> because global immutability is a stronger guarantee than local immutability. A <code>box</code> field makes the same local immutability guarantee as its origin, so that's also fine.</p>
+<p>For <code>trn</code> and <code>ref</code> we need to return a locally immutable reference capability that doesn't violate any guarantees the field makes. In both cases, we can return <code>box</code>.</p>
 <h2 id="reading-from-a-tag-variable">Reading from a <code>tag</code> variable</h2>
 <p>This one is easy: <code>tag</code> variables are opaque! They can't be read from.</p>
               

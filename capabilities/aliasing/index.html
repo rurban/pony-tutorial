@@ -160,12 +160,83 @@
           
             <li>
     <ul class="subnav">
+    <li><span>Expressions</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../expressions/variables/">Variables</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../expressions/infix-ops/">Infix ops</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../expressions/control-structures/">Control structures</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../expressions/methods/">Methods</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../expressions/exceptions/">Exceptions</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../expressions/sugar/">Sugar</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../expressions/object-literals/">Object literals</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../expressions/partial-application/">Partial application</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
     <li><span>Capabilities</span></li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../introduction/">Introduction</a>
+        <a class="" href="../object-capabilities/">Object capabilities</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../reference-capabilities/">Reference capabilities</a>
         
     </li>
 
@@ -230,70 +301,6 @@
             
     <li class="toctree-l1 ">
         <a class="" href="../arrow-types/">Arrow types</a>
-        
-    </li>
-
-        
-    </ul>
-<li>
-          
-            <li>
-    <ul class="subnav">
-    <li><span>Expressions</span></li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../expressions/variables/">Variables</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../expressions/infix-ops/">Infix ops</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../expressions/control-structures/">Control structures</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../expressions/methods/">Methods</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../expressions/exceptions/">Exceptions</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../expressions/sugar/">Sugar</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../expressions/object-literals/">Object literals</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../expressions/partial-application/">Partial application</a>
         
     </li>
 
@@ -519,20 +526,20 @@
               
                 <p><strong>Aliasing</strong> means having more than one variable that points to the same object.</p>
 <p>In most programming languages, aliasing is pretty simple. You just assign some variable to another variable, and there you go, you have an alias. The variable you assign to has the same type (or some supertype) as what's being assigned to it, and everything is fine.</p>
-<p>In Pony, that works for some capabilities, but not all.</p>
+<p>In Pony, that works for some reference capabilities, but not all.</p>
 <h1 id="aliasing-and-deny-guarantees">Aliasing and deny guarantees</h1>
-<p>The reason for this is that <code>iso</code> capabilities deny other <code>iso</code> variables that point to the same object. That is, you can only have one <code>iso</code> variable pointing to any given object. The same goes for <code>trn</code>.</p>
+<p>The reason for this is that the <code>iso</code> reference capability denies other <code>iso</code> variables that point to the same object. That is, you can only have one <code>iso</code> variable pointing to any given object. The same goes for <code>trn</code>.</p>
 <pre><code class="pony">fun test(a: Wombat iso) =&gt;
   var b: Wombat iso = a // Not allowed!
 </code></pre>
 
-<p>Here we have some function that gets passed an isolated Wombat. If we try to alias <code>a</code> by assigning it to <code>b</code>, we'll be breaking capability guarantees so the compiler will stop us.</p>
-<p><strong>What can I alias an <code>iso</code> as?</strong> Since an <code>iso</code> says no other variable can be used by <em>any</em> actor to read from or write to that object, we can only create aliases to an <code>iso</code> that can neither read nor write. Fortunately, we've got a capability that does exactly that: <code>tag</code>. So we can do this and the compiler will be happy:</p>
+<p>Here we have some function that gets passed an isolated Wombat. If we try to alias <code>a</code> by assigning it to <code>b</code>, we'll be breaking reference capability guarantees so the compiler will stop us.</p>
+<p><strong>What can I alias an <code>iso</code> as?</strong> Since an <code>iso</code> says no other variable can be used by <em>any</em> actor to read from or write to that object, we can only create aliases to an <code>iso</code> that can neither read nor write. Fortunately, we've got a reference capability that does exactly that: <code>tag</code>. So we can do this and the compiler will be happy:</p>
 <pre><code class="pony">fun test(a: Wombat iso) =&gt;
   var b: Wombat tag = a // Allowed!
 </code></pre>
 
-<p><strong>What about aliasing <code>trn</code>?</strong> Since a <code>trn</code> says no other variable can be used by <em>any</em> actor to write to that object, we need something that doesn't allow writing, but also doesn't prevent our <code>trn</code> variable from writing. Fortunately, weve got a capability that does that too: <code>box</code>. So we can do this and the compiler will be happy:</p>
+<p><strong>What about aliasing <code>trn</code>?</strong> Since a <code>trn</code> says no other variable can be used by <em>any</em> actor to write to that object, we need something that doesn't allow writing, but also doesn't prevent our <code>trn</code> variable from writing. Fortunately, weve got a reference capability that does that too: <code>box</code>. So we can do this and the compiler will be happy:</p>
 <pre><code class="pony">fun test(a: Wombat trn) =&gt;
   var b: Wombat box = a // Allowed!
 </code></pre>

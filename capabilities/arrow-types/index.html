@@ -160,76 +160,6 @@
           
             <li>
     <ul class="subnav">
-    <li><span>Capabilities</span></li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../introduction/">Introduction</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../guarantees/">Guarantees</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../aliasing/">Aliasing</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../combining-capabilities/">Combining capabilities</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../passing-and-sharing/">Passing and sharing</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../capability-subtyping/">Capability subtyping</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 current">
-        <a class="current" href="./">Arrow types</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#using-this-as-a-viewpoint">Using this-&gt; as a viewpoint</a></li>
-                
-            
-                <li class="toctree-l3"><a href="#using-a-type-parameter-as-a-viewpoint">Using a type parameter as a viewpoint</a></li>
-                
-            
-                <li class="toctree-l3"><a href="#using-box-as-a-viewpoint">Using box-&gt; as a viewpoint</a></li>
-                
-            
-            </ul>
-        
-    </li>
-
-        
-    </ul>
-<li>
-          
-            <li>
-    <ul class="subnav">
     <li><span>Expressions</span></li>
 
         
@@ -285,6 +215,83 @@
             
     <li class="toctree-l1 ">
         <a class="" href="../../expressions/partial-application/">Partial application</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>Capabilities</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../object-capabilities/">Object capabilities</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../reference-capabilities/">Reference capabilities</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../guarantees/">Guarantees</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../aliasing/">Aliasing</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../combining-capabilities/">Combining capabilities</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../passing-and-sharing/">Passing and sharing</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../capability-subtyping/">Capability subtyping</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Arrow types</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#using-this-as-a-viewpoint">Using this-&gt; as a viewpoint</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#using-a-type-parameter-as-a-viewpoint">Using a type parameter as a viewpoint</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#using-box-as-a-viewpoint">Using box-&gt; as a viewpoint</a></li>
+                
+            
+            </ul>
         
     </li>
 
@@ -508,7 +515,7 @@
           <div role="main">
             <div class="section">
               
-                <p>When we talked about <strong>capability composition</strong> and <strong>viewpoint adaptation</strong>, we dealt with cases where we know the capability of the origin. However, sometimes we don't know the precise capability of the origin.</p>
+                <p>When we talked about <strong>reference capability composition</strong> and <strong>viewpoint adaptation</strong>, we dealt with cases where we know the reference capability of the origin. However, sometimes we don't know the precise reference capability of the origin.</p>
 <p>When that happens, we can write a <strong>viewpoint adapted type</strong>, which we call an <strong>arrow type</strong> because we write it with an <code>-&gt;</code>.</p>
 <h1 id="using-this-as-a-viewpoint">Using <code>this-&gt;</code> as a viewpoint</h1>
 <p>A function with a <code>box</code> receiver can be called with a <code>ref</code> receiver or a <code>val</code> receiver as well, since those are both subtypes of <code>box</code>. Sometimes, we want to be able to talk about a type takes this into account. For example:</p>
@@ -518,19 +525,19 @@
   fun friend(): this-&gt;Wombat =&gt; _friend
 </code></pre>
 
-<p>Here, we have a <code>Wombat</code>, and every <code>Wombat</code> has a friend that's also a <code>Wombat</code> (lucky <code>Wombat</code>). In fact, it's a <code>Wombat ref</code>, since <code>ref</code> is the default capability for a <code>Wombat</code> (since we didn't specify one). We also have a function that returns that friend. It's got a <code>box</code> receiver (because <code>box</code> is the default receiver capability for a function if we don't specify it).</p>
+<p>Here, we have a <code>Wombat</code>, and every <code>Wombat</code> has a friend that's also a <code>Wombat</code> (lucky <code>Wombat</code>). In fact, it's a <code>Wombat ref</code>, since <code>ref</code> is the default reference capability for a <code>Wombat</code> (since we didn't specify one). We also have a function that returns that friend. It's got a <code>box</code> receiver (because <code>box</code> is the default receiver reference capability for a function if we don't specify it).</p>
 <p>So the return type would normally be a <code>Wombat box</code>. Why's that? Because, as we saw earlier, when we read a <code>ref</code> field from a <code>box</code> origin, we get a <code>box</code>. In this case, the origin is the receiver, which is a <code>box</code>.</p>
 <p>But wait! What if we want a function that can return a <code>Wombat ref</code> when the receiver is a <code>ref</code>, a <code>Wombat val</code> when the receiver is a <code>val</code>, and a <code>Wombat box</code> when the receiver is a <code>box</code>? We don't want to have to write the function three times.</p>
 <p>We use <code>this-&gt;</code>! In this case, <code>this-&gt;Wombat</code>. It means "a <code>Wombat ref</code> as seen by the receiver".</p>
-<p>We know at the <em>call site</em> what the real capability of the receiver is. So when the function is called, the compiler knows everything it needs to know to get this right.</p>
+<p>We know at the <em>call site</em> what the real reference capability of the receiver is. So when the function is called, the compiler knows everything it needs to know to get this right.</p>
 <h1 id="using-a-type-parameter-as-a-viewpoint">Using a type parameter as a viewpoint</h1>
 <p>We haven't covered generics yet, so this may seem a little weird. We'll cover this again when we talk about generics (i.e. parameterised types), but we're mentioning it here for completeness.</p>
-<p>Another time we don't know the precise capability of something is if we are using a type parameter. Here's an example from the standard library:</p>
+<p>Another time we don't know the precise reference capability of something is if we are using a type parameter. Here's an example from the standard library:</p>
 <pre><code class="pony">class ListValues[A, N: ListNode[A] box] is Iterator[N-&gt;A]
 </code></pre>
 
 <p>Here, we have a <code>ListValues</code> type that has two type parameters, <code>A</code> and <code>N</code>. In addition, <code>N</code> has a constraint: it has to be a subtype of <code>ListNode[A] box</code>. That's all fine and well, but we also say the <code>ListValues[A, N]</code> provides <code>Iterator[N-&gt;A]</code>. That's the interesting bit: we provide an interface that let's us iterate over values of the type <code>N-&gt;A</code>.</p>
-<p>That means we'll be returning objects of the type <code>A</code>, but the capability will be the however an object of type <code>N</code> would see an object of type <code>A</code>.</p>
+<p>That means we'll be returning objects of the type <code>A</code>, but the reference capability will be the however an object of type <code>N</code> would see an object of type <code>A</code>.</p>
 <h1 id="using-box-as-a-viewpoint">Using <code>box-&gt;</code> as a viewpoint</h1>
 <p>There's one more way we use arrow types, and it's also related to generics. Sometimes we want to talk about a type parameter as it is seen by some unknown type, <em>as long as that type can read the type parameter</em>.</p>
 <p>In other words, the unknown type will be a subtype of <code>box</code>, but that's all we know. Here's an example from the standard library:</p>
@@ -547,7 +554,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../../expressions/variables/" class="btn btn-neutral float-right" title="Variables"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../../actors/behaviours/" class="btn btn-neutral float-right" title="Behaviours"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../capability-subtyping/" class="btn btn-neutral" title="Capability subtyping"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -579,7 +586,7 @@
         <span><a href="../capability-subtyping/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../../expressions/variables/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../../actors/behaviours/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

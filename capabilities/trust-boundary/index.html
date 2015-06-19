@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Recover and consume - Pony Tutorial</title>
+  <title>Trust boundary - Pony Tutorial</title>
   
 
   <link rel="shortcut icon" href="../../img/favicon.ico">
@@ -21,7 +21,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Recover and consume";
+    var mkdocs_page_name = "Trust boundary";
   </script>
   
   <script src="../../js/jquery-2.1.1.min.js"></script>
@@ -229,56 +229,90 @@
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/object-capabilities/">Object capabilities</a>
+        <a class="" href="../object-capabilities/">Object capabilities</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/reference-capabilities/">Reference capabilities</a>
+        <a class="" href="../reference-capabilities/">Reference capabilities</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/guarantees/">Guarantees</a>
+        <a class="" href="../guarantees/">Guarantees</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/aliasing/">Aliasing</a>
+        <a class="" href="../aliasing/">Aliasing</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/combining-capabilities/">Combining capabilities</a>
+        <a class="" href="../consume-and-destructive-read/">Consume and destructive read</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/passing-and-sharing/">Passing and sharing</a>
+        <a class="" href="../recovering-capabilities/">Recovering capabilities</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/capability-subtyping/">Capability subtyping</a>
+        <a class="" href="../combining-capabilities/">Combining capabilities</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/arrow-types/">Arrow types</a>
+        <a class="" href="../passing-and-sharing/">Passing and sharing</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../capability-subtyping/">Capability subtyping</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../arrow-types/">Arrow types</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Trust boundary</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#trust-boundaries">Trust boundaries</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#safe-packages">Safe packages</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#example-of-use">Example of use</a></li>
+                
+            
+            </ul>
         
     </li>
 
@@ -293,32 +327,7 @@
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../behaviours/">Behaviours</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../capabilities/">Capabilities</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 current">
-        <a class="current" href="./">Recover and consume</a>
-        
-            <ul>
-            
-            </ul>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../arrow-types/">Arrow types</a>
+        <a class="" href="../../actors/behaviours/">Behaviours</a>
         
     </li>
 
@@ -492,11 +501,11 @@
     
       
         
-          <li>Actors &raquo;</li>
+          <li>Capabilities &raquo;</li>
         
       
     
-    <li>Recover and consume</li>
+    <li>Trust boundary</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -506,7 +515,20 @@
           <div role="main">
             <div class="section">
               
-                
+                <p>We mentioned previously that the C FFI can be used to break pretty much every guarantee that Pony makes. This is because, once you've called into C, you are executing arbitrary machine code that can stomp memory addresses, write to anything, and generally be pretty badly behaved.</p>
+<h1 id="trust-boundaries">Trust boundaries</h1>
+<p>When we talk about trust, we don't mean things you trust because you think they are perfect. Instead, we mean things you <em>have</em> to trust in order to get things done, even though you know they are <em>imperfect</em>.</p>
+<p>In Pony, when you use the C FFI, you are basically declaring that you trust the C code that's being executed. That's fine, because you may need it to get work done. But what about trusting someone else's code to use the C FFI? You may need to, but you definitely want to know that it's happening.</p>
+<h1 id="safe-packages">Safe packages</h1>
+<p>The normal way to handle that is to be sure you're using just the code you need to use in your program. Pretty simple! Don't use some random package off the internet without looking at the code and making sure it doesn't do nasty FFI stuff.</p>
+<p>But we can do better than that.</p>
+<p>In Pony, you can optionally declare a set of <em>safe</em> packages on the <code>ponyc</code> command line, like this:</p>
+<pre><code class="sh">ponyc --safe=files:net:net/ssl my_project
+</code></pre>
+
+<p>Here, we are declaring that only the <code>files</code>, <code>net</code> and <code>net/ssl</code> packages are allowed to use C FFI calls. We've established our trust boundary: any other packages that try to use C FFI calls will result in a compile-time error.</p>
+<h1 id="example-of-use">Example of use</h1>
+<p>On the <a href="http://sandbox.ponylang.org">Pony sandbox</a>, we are compiling and executing arbitrary code that users input. That could be dangerous. So we limit the use of the C FFI to the <code>time</code> package. We don't allow access to the file system, or to the network, or anything else dangerous.</p>
               
             </div>
           </div>
@@ -514,10 +536,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../arrow-types/" class="btn btn-neutral float-right" title="Arrow types"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../../actors/behaviours/" class="btn btn-neutral float-right" title="Behaviours"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../capabilities/" class="btn btn-neutral" title="Capabilities"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../arrow-types/" class="btn btn-neutral" title="Arrow types"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -543,10 +565,10 @@
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../capabilities/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../arrow-types/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../arrow-types/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../../actors/behaviours/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

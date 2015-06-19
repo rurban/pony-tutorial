@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Capabilities - Pony Tutorial</title>
+  <title>Recovering capabilities - Pony Tutorial</title>
   
 
   <link rel="shortcut icon" href="../../img/favicon.ico">
@@ -21,7 +21,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Capabilities";
+    var mkdocs_page_name = "Recovering capabilities";
   </script>
   
   <script src="../../js/jquery-2.1.1.min.js"></script>
@@ -229,56 +229,93 @@
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/object-capabilities/">Object capabilities</a>
+        <a class="" href="../object-capabilities/">Object capabilities</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/reference-capabilities/">Reference capabilities</a>
+        <a class="" href="../reference-capabilities/">Reference capabilities</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/guarantees/">Guarantees</a>
+        <a class="" href="../guarantees/">Guarantees</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/aliasing/">Aliasing</a>
+        <a class="" href="../aliasing/">Aliasing</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/combining-capabilities/">Combining capabilities</a>
+        <a class="" href="../consume-and-destructive-read/">Consume and destructive read</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Recovering capabilities</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#why-is-this-useful">Why is this useful?</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#what-does-this-look-like">What does this look like?</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#how-does-this-work">How does this work?</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#automatic-receiver-recovery">Automatic receiver recovery</a></li>
+                
+            
+            </ul>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/passing-and-sharing/">Passing and sharing</a>
+        <a class="" href="../combining-capabilities/">Combining capabilities</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/capability-subtyping/">Capability subtyping</a>
+        <a class="" href="../passing-and-sharing/">Passing and sharing</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../capabilities/arrow-types/">Arrow types</a>
+        <a class="" href="../capability-subtyping/">Capability subtyping</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../arrow-types/">Arrow types</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../trust-boundary/">Trust boundary</a>
         
     </li>
 
@@ -293,32 +330,7 @@
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../behaviours/">Behaviours</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 current">
-        <a class="current" href="./">Capabilities</a>
-        
-            <ul>
-            
-            </ul>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../recover-and-consume/">Recover and consume</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../arrow-types/">Arrow types</a>
+        <a class="" href="../../actors/behaviours/">Behaviours</a>
         
     </li>
 
@@ -492,11 +504,11 @@
     
       
         
-          <li>Actors &raquo;</li>
+          <li>Capabilities &raquo;</li>
         
       
     
-    <li>Capabilities</li>
+    <li>Recovering capabilities</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -506,7 +518,63 @@
           <div role="main">
             <div class="section">
               
-                
+                <p>A <code>recover</code> expression let's you "lift" the reference capability of the result. A mutable reference capability (<code>iso</code>, <code>trn</code>, or <code>ref</code>) can become <em>any</em> reference capability, and an immutable reference capability (<code>val</code> or <code>box</code>) can become any immutable or opaque reference capability.</p>
+<h1 id="why-is-this-useful">Why is this useful?</h1>
+<p>This most straightforward use of <code>recover</code> is to get an <code>iso</code> that you can pass to another actor. But it can be used for many other things as well, such as:</p>
+<ul>
+<li>Creating a cyclic immutable data structure. That is, you can create a complex mutable data structure inside a <code>recover</code> expression, "lift" the resulting <code>ref</code> to a <code>val</code>.</li>
+<li>"Borrow" an <code>iso</code> as a <code>ref</code>, do a series of complex mutable operations on it, and return it as an <code>iso</code> again.</li>
+<li>"Extract" a mutable field from an <code>iso</code> and return it as an <code>iso</code>.</li>
+</ul>
+<h1 id="what-does-this-look-like">What does this look like?</h1>
+<pre><code class="pony">recover Array[String] end
+</code></pre>
+
+<p>That's a simple one: it returns an <code>Array[String] iso</code>, instead of the usual <code>Array[String] ref</code> you would get.</p>
+<p>Here's a more complicate example from the standard library:</p>
+<pre><code class="pony">recover
+  var s = String((prec' + 1).max(width.max(31)))
+  var value = x
+
+  try
+    if value == 0 then
+      s.push(table(0))
+    else
+      while value != 0 do
+        let index = (value = value / base) - (value * base)
+        s.push(table(index))
+      end
+    end
+  end
+
+  s.append(typestring)
+  _extend_digits(s, prec')
+  s.append(prestring)
+  _pad(s, width, align, fill)
+  s
+end
+</code></pre>
+
+<p>That's from <code>ToString</code>. It creates a <code>String ref</code>, does a bunch of stuff with it, and finally returns it as a <code>String iso</code>.</p>
+<p>Both of those examples use the default reference capability for a <code>recover</code> expression, since they don't specify one. The default for any mutable reference capability is <code>iso</code> and the default for any immutable reference capability is <code>val</code>. You can also give an explicit one:</p>
+<pre><code class="pony">let key = recover val line.substring(0, i - 1).trim() end
+</code></pre>
+
+<p>That's from <code>net/http/_PayloadBuilder</code>. We get a substring of <code>line</code>, which is a <code>String iso^</code>, then we call trim on it, which returns itself. But since trim is a <code>ref</code> function, it returns itself as a <code>String ref^</code> - so we use a <code>recover val</code> to end up with a <code>String val</code>.</p>
+<h1 id="how-does-this-work">How does this work?</h1>
+<p>Inside the <code>recover</code> expression, your code only has access to <strong>sendable</strong> values from the enclosing lexical scope. In other words, you can only use <code>iso</code>, <code>val</code> and <code>tag</code> things from outside the <code>recover</code> expression.</p>
+<p>This means that when the <code>recover</code> expression finishes, any aliases to the result of the expression other than <code>iso</code>, <code>val</code> and <code>tag</code> ones won't exist any more. That makes it safe to "lift" the reference capability of the result of the expression.</p>
+<p>If the <code>recover</code> expression could access <strong>non-sendable</strong> values from the enclosing lexical scope, "lifting" the reference capability of the result wouldn't be safe. Some of those values could "leak" into an <code>iso</code> or <code>val</code> result, and result in data-races.</p>
+<h1 id="automatic-receiver-recovery">Automatic receiver recovery</h1>
+<p>When you have an <code>iso</code> or <code>trn</code> receiver, you normally can't call <code>ref</code> methods on it. That's because the receiver is also an argument to a method, which means both the method body and the caller have access to the receiver at the same time. And <em>that</em> means we have to alias the receiver when we call a method on it. The alias of an <code>iso</code> is a <code>tag</code> (which isn't a subtype of <code>ref</code>) and the alias of a <code>trn</code> is a <code>box</code> (also not a subtype of <code>ref</code>).</p>
+<p>But we can get around this! If all the arguments to the method <em>at the call-site</em> are <strong>sendable</strong>, and the return type of the method is either <strong>sendable</strong> or isn't used <em>at the call-site</em>, then we can "automatically recover" the receiver. That just means we don't have to alias the receiver - and <em>that</em> means we can call <code>ref</code> methods on an <code>iso</code> or <code>trn</code>, since <code>iso</code> and <code>trn</code> are both subtypes of <code>ref</code>.</p>
+<p>Notice that this technique looks mostly at the call-site, rather than at the definition of the method being called. That makes it more flexible. For example, if the method being called wants a <code>ref</code> argument, and we pass it an <code>iso</code> argument, that's <strong>sendable</strong> at the call-site, so we can still do automatic receiver recovery.</p>
+<p>This may sound a little complicated, but in practice it means you can write code that treats an <code>iso</code> mostly like a <code>ref</code>, and the compiler will complain when it's wrong. For example:</p>
+<pre><code class="pony">let s = recover String end
+s.append(&quot;hi&quot;)
+</code></pre>
+
+<p>Here, we create a <code>String iso</code> and then append some text to it. The append method takes a <code>ref</code> receiver and a <code>box</code> parameter. We can automatically recover the <code>iso</code> receiver, since we pass a <code>val</code> parameter, so everything is fine.</p>
               
             </div>
           </div>
@@ -514,10 +582,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../recover-and-consume/" class="btn btn-neutral float-right" title="Recover and consume"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../combining-capabilities/" class="btn btn-neutral float-right" title="Combining capabilities"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../behaviours/" class="btn btn-neutral" title="Behaviours"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../consume-and-destructive-read/" class="btn btn-neutral" title="Consume and destructive read"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -543,10 +611,10 @@
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../behaviours/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../consume-and-destructive-read/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../recover-and-consume/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../combining-capabilities/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

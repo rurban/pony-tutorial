@@ -212,7 +212,13 @@
     
         
     <url>
-     <loc>None/actors/behaviours/</loc>
+     <loc>None/generics/polymorphic-types/</loc>
+     <lastmod>2015-06-19</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>None/generics/polymorphic-methods/</loc>
      <lastmod>2015-06-19</lastmod>
      <changefreq>daily</changefreq>
     </url>
@@ -233,22 +239,6 @@
      <lastmod>2015-06-19</lastmod>
      <changefreq>daily</changefreq>
     </url>
-    
-
-    
-        
-    <url>
-     <loc>None/generics/polymorphic-types/</loc>
-     <lastmod>2015-06-19</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
-    <url>
-     <loc>None/generics/polymorphic-methods/</loc>
-     <lastmod>2015-06-19</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
     
 
     

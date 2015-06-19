@@ -325,12 +325,19 @@
           
             <li>
     <ul class="subnav">
-    <li><span>Actors</span></li>
+    <li><span>Generics</span></li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../actors/behaviours/">Behaviours</a>
+        <a class="" href="../../generics/polymorphic-types/">Polymorphic types</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../generics/polymorphic-methods/">Polymorphic methods</a>
         
     </li>
 
@@ -350,28 +357,6 @@
         <a class="" href="../../composition-inheritance/code-sharing/">Code sharing</a>
         
     </li>
-<li>
-          
-            <li>
-    <ul class="subnav">
-    <li><span>Generics</span></li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../generics/polymorphic-types/">Polymorphic types</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../generics/polymorphic-methods/">Polymorphic methods</a>
-        
-    </li>
-
-        
-    </ul>
 <li>
           
             <li>
@@ -600,15 +585,15 @@
 <p><strong>Is there a <code>return</code> keyword in Pony?</strong> Yes. It's used to return "early" from a function, i.e. to return something right away and not keep running until the last expression.</p>
 <p>The second function, <code>set_hunger</code>, introduces a <em>bunch</em> of new concepts all at once. Let's go through them one by one.</p>
 <h3 id="the-ref-keyword-right-after-fun">The <code>ref</code> keyword right after <code>fun</code></h3>
-<p>This is a <strong>capability</strong>. In this case, it means the <em>receiver</em>, i.e. the object on which the <code>set_hunger</code> function is being called, has to be a <code>ref</code> type. A <code>ref</code> type is a <strong>reference type</strong>, meaning that the object is <strong>mutable</strong>. We need this because we are writing a new value to the <code>_hunger_level</code> field.</p>
-<p><strong>What's the receiver capability of the <code>hunger</code> method?</strong> The default receiver capability if none is specified is <code>box</code>, which means "I need to be able to read from this, but I won't write to it".</p>
+<p>This is a <strong>reference capability</strong>. In this case, it means the <em>receiver</em>, i.e. the object on which the <code>set_hunger</code> function is being called, has to be a <code>ref</code> type. A <code>ref</code> type is a <strong>reference type</strong>, meaning that the object is <strong>mutable</strong>. We need this because we are writing a new value to the <code>_hunger_level</code> field.</p>
+<p><strong>What's the receiver reference capability of the <code>hunger</code> method?</strong> The default receiver reference capability if none is specified is <code>box</code>, which means "I need to be able to read from this, but I won't write to it".</p>
 <p><strong>What would happen if we left the <code>ref</code> keyword off the <code>set_hunger</code> method?</strong> The compiler would give you an error. It would see you were trying to modify a field and complain about it.</p>
 <h3 id="the-0-after-the-parameter-to">The <code>= 0</code> after the parameter <code>to</code></h3>
 <p>This is a <strong>default argument</strong>. It means that if you don't include that argument at the call site, you will get the default argument. In this case, <code>to</code> will be zero if you don't specify it.</p>
 <h3 id="what-does-the-function-return">What does the function return?</h3>
 <p>It returns the <em>old</em> value of <code>_hunger_level</code>.</p>
 <p><strong>Wait, seriously? The <em>old</em> value?</strong> Yes. In Pony, assignment is an expression rather than a statement. That means it has a result. This is true of a lot of languages, but they tend to return the <em>new</em> value. In other words, given <code>a = b</code>, in most languages, the value of that is the value of <code>b</code>. But in Pony, the value of that is the <em>old</em> value of <code>a</code>.</p>
-<p><strong>...why?</strong> It's called a "destructive read", and it lets you do awesome things with a capabilities type system. We'll talk about that more later. For now, we'll just mention that you can also use it to implement a <em>swap</em> operation. In most languages, to swap the values of <code>a</code> and <code>b</code> you need to do something like:</p>
+<p><strong>...why?</strong> It's called a "destructive read", and it lets you do awesome things with a capabilities-secure type system. We'll talk about that more later. For now, we'll just mention that you can also use it to implement a <em>swap</em> operation. In most languages, to swap the values of <code>a</code> and <code>b</code> you need to do something like:</p>
 <pre><code class="pony">var temp = a
 a = b
 b = temp

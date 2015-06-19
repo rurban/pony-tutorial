@@ -322,12 +322,19 @@
           
             <li>
     <ul class="subnav">
-    <li><span>Actors</span></li>
+    <li><span>Generics</span></li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../actors/behaviours/">Behaviours</a>
+        <a class="" href="../../generics/polymorphic-types/">Polymorphic types</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../generics/polymorphic-methods/">Polymorphic methods</a>
         
     </li>
 
@@ -347,28 +354,6 @@
         <a class="" href="../../composition-inheritance/code-sharing/">Code sharing</a>
         
     </li>
-<li>
-          
-            <li>
-    <ul class="subnav">
-    <li><span>Generics</span></li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../generics/polymorphic-types/">Polymorphic types</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../generics/polymorphic-methods/">Polymorphic methods</a>
-        
-    </li>
-
-        
-    </ul>
 <li>
           
             <li>
@@ -560,7 +545,7 @@ type Person is (HasName &amp; HasAge &amp; HasAddress)
 </code></pre>
 
 <p>Unlike our previous example the first type parameter, <code>K</code>, has a type associated with it. This is a <strong>constraint</strong>, which means when you parameterise a <code>Map</code>, the type you pass for <code>K</code> must be a subtype of the constraint.</p>
-<p>Also notice that <code>box</code> appears in the type. This is a <strong>capability</strong>. It means there is a certain class of operations we need to be able to do on a <code>K</code>. We'll cover this in more detail later.</p>
+<p>Also notice that <code>box</code> appears in the type. This is a <strong>reference capability</strong>. It means there is a certain class of operations we need to be able to do on a <code>K</code>. We'll cover this in more detail later.</p>
 <p>Just like our other examples all this really means is that <code>Map</code> is really a kind of <code>HashMap</code>.</p>
 <h1 id="other-stuff">Other stuff</h1>
 <p>Type aliases get used for a lot of things, but this gives you the general idea. Just remember that a type alias is always a convenience: you could replace every use of the type alias with the full type after the <code>is</code>.</p>

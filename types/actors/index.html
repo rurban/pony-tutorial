@@ -328,12 +328,19 @@
           
             <li>
     <ul class="subnav">
-    <li><span>Actors</span></li>
+    <li><span>Generics</span></li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../actors/behaviours/">Behaviours</a>
+        <a class="" href="../../generics/polymorphic-types/">Polymorphic types</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../generics/polymorphic-methods/">Polymorphic methods</a>
         
     </li>
 
@@ -353,28 +360,6 @@
         <a class="" href="../../composition-inheritance/code-sharing/">Code sharing</a>
         
     </li>
-<li>
-          
-            <li>
-    <ul class="subnav">
-    <li><span>Generics</span></li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../generics/polymorphic-types/">Polymorphic types</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../generics/polymorphic-methods/">Polymorphic methods</a>
-        
-    </li>
-
-        
-    </ul>
 <li>
           
             <li>
@@ -546,8 +531,8 @@
 <p>Actors themselves, however, are sequential. That is, each actor will only execute one behaviour at a time. This means all the code in an actor can be written without caring about concurrency: no need for locks or semaphores or anything like that.</p>
 <p>When you're writing Pony code, it's nice to think of actors not as a unit of parallelism, but as a unit of sequentiality. That is, an actor should do only what <em>has</em> to be done sequentially. Anything else can be broken out into another actor, making it automatically parallel.</p>
 <h1 id="why-is-this-safe">Why is this safe?</h1>
-<p>Because of Pony's <strong>capabilities secure type system</strong>. We've mentioned capabilities briefly before, when talking about function receiver capabilities. The short version is that they are annotations on a type that make all this parallelism safe without any runtime overhead.</p>
-<p>We will cover capabilities in depth later.</p>
+<p>Because of Pony's <strong>capabilities secure type system</strong>. We've mentioned reference capabilities briefly before, when talking about function receiver reference capabilities. The short version is that they are annotations on a type that make all this parallelism safe without any runtime overhead.</p>
+<p>We will cover reference capabilities in depth later.</p>
 <h1 id="actors-are-cheap">Actors are cheap</h1>
 <p>If you've done concurrent programming before, you'll know that threads can be expensive. Context switches can cause problems, each thread needs a stack (which can be a lot of memory), and you need lots of locks and other mechanisms to write thread-safe code.</p>
 <p>But actors are cheap. Really cheap. The extra cost of an actor as opposed to an object is about 256 bytes of memory. Bytes, not kilobytes! And there are no locks and no context switches. An actor that isn't executing consumes no resources other than the few extra bytes of memory.</p>

@@ -322,12 +322,19 @@
           
             <li>
     <ul class="subnav">
-    <li><span>Actors</span></li>
+    <li><span>Generics</span></li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../actors/behaviours/">Behaviours</a>
+        <a class="" href="../../generics/polymorphic-types/">Polymorphic types</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../generics/polymorphic-methods/">Polymorphic methods</a>
         
     </li>
 
@@ -347,28 +354,6 @@
         <a class="" href="../../composition-inheritance/code-sharing/">Code sharing</a>
         
     </li>
-<li>
-          
-            <li>
-    <ul class="subnav">
-    <li><span>Generics</span></li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../generics/polymorphic-types/">Polymorphic types</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../generics/polymorphic-methods/">Polymorphic methods</a>
-        
-    </li>
-
-        
-    </ul>
 <li>
           
             <li>
@@ -515,7 +500,7 @@
           <div role="main">
             <div class="section">
               
-                <p>Subtyping is about <em>substitutability</em>. That is, if we need to supply a certain type, what other types can we substitute instead? Capabilities factor into this.</p>
+                <p>Subtyping is about <em>substitutability</em>. That is, if we need to supply a certain type, what other types can we substitute instead? Reference capabilities factor into this.</p>
 <h1 id="simple-substitution">Simple substitution</h1>
 <p>First, let's cover substitution without worrying about ephemeral types (<code>^</code>) or alias types (<code>!</code>). The <code>&lt;:</code> symbol means "is a subtype of" or alternatively "can be substituted for".</p>
 <ul>
@@ -528,7 +513,7 @@
 </ul>
 <p>Subtyping is <em>transitive</em>. That means that since <code>iso &lt;: trn</code> and <code>trn &lt;: ref</code> and <code>ref &lt;: box</code>, we also get <code>iso &lt;: box</code>.</p>
 <h1 id="aliased-substitution">Aliased substitution</h1>
-<p>Now let's consider what happens when we have an alias of a capability. For example, if we have some <code>iso</code> and we alias it (without doing a <code>consume</code> or a destructive read), the type we get is <code>iso!</code>, not <code>iso</code>.</p>
+<p>Now let's consider what happens when we have an alias of a reference capability. For example, if we have some <code>iso</code> and we alias it (without doing a <code>consume</code> or a destructive read), the type we get is <code>iso!</code>, not <code>iso</code>.</p>
 <ul>
 <li><code>iso! &lt;: tag</code>. This is a pretty big change. Instead of being a subtype of everything like <code>iso</code>, the only thing an <code>iso!</code> is a subtype of is <code>tag</code>. This is because the <code>iso</code> still exists, and is still <em>read and write unique</em>. Any alias can neither read from nor write to the object. That means an <code>iso!</code> can only be a subtype of <code>tag</code>.</li>
 <li><code>trn! &lt;: box</code>. This is a change too, but not as big a change. Since <code>trn</code> is only <em>write unique</em>, it's ok for aliases to read from the object, but it's not ok for aliases to write to the object. That means we could have <code>box</code> or <code>val</code> aliases - except <code>val</code> guarantees that <em>no</em> alias can write the the object! Since our <code>trn</code> still exists, and can write to the object, a <code>val</code> alias would break the guarantees that <code>val</code> makes. So a <code>trn!</code> can only be a subtype of <code>box</code> (and, transitively, <code>tag</code> as well.</li>
@@ -538,14 +523,14 @@
 <li><code>tag! &lt;: tag</code>. A <code>tag</code> doesn't make any guarantees at all. Just like with a <code>box</code>, we can't make more guarantees when we make a new alias, so a <code>tag</code> can only alias as a <code>tag</code>.</li>
 </ul>
 <h1 id="ephemeral-substitution">Ephemeral substitution</h1>
-<p>The last case to consider is when we have an ephemeral capability. For example, if we have some <code>iso</code> and we <code>consume</code> it or do a destructive read, the type we get is <code>iso^</code>, not <code>iso</code>.</p>
+<p>The last case to consider is when we have an ephemeral reference capability. For example, if we have some <code>iso</code> and we <code>consume</code> it or do a destructive read, the type we get is <code>iso^</code>, not <code>iso</code>.</p>
 <ul>
 <li><code>iso^ &lt;: iso</code>. This is pretty simple. When we givean <code>iso^</code> a name, by assigning it to something or passing it as an argument to a method, it loses the <code>^</code> and becomes a plain old <code>iso</code>. We know we gave up our previous <code>iso</code>, so it's safe to have a new one.</li>
 <li><code>trn^ &lt;: trn</code>. This works exactly like <code>iso^</code>. The guarantee is weaker (<em>write uniqueness</em> instead of <em>read and write uniqueness</em>), but it works the same way.</li>
-<li><code>ref^ &lt;: ref^</code> and <code>ref^ &lt;: ref</code> and <code>ref &lt;: ref^</code>. Here, we have another case. Not only is a <code>ref^</code> a subtype of a <code>ref</code>, it's also a subtype of a <code>ref^</code>. What's going on here? The reason is that an ephemeral capability is a way of saying "a capability that, when aliased, results in the base capability". Since a <code>ref</code> can be aliased as a <code>ref</code>, that means <code>ref</code> and <code>ref^</code> are completely interchangeable.</li>
-<li><code>val^</code>, <code>box^</code>, <code>tag^</code>. These all work the same way as <code>ref</code>, that is, they are interchangeable with the base capability. It's for the same reason: all of these capabilities can be aliased as themselves.</li>
+<li><code>ref^ &lt;: ref^</code> and <code>ref^ &lt;: ref</code> and <code>ref &lt;: ref^</code>. Here, we have another case. Not only is a <code>ref^</code> a subtype of a <code>ref</code>, it's also a subtype of a <code>ref^</code>. What's going on here? The reason is that an ephemeral reference capability is a way of saying "a reference capability that, when aliased, results in the base reference capability". Since a <code>ref</code> can be aliased as a <code>ref</code>, that means <code>ref</code> and <code>ref^</code> are completely interchangeable.</li>
+<li><code>val^</code>, <code>box^</code>, <code>tag^</code>. These all work the same way as <code>ref</code>, that is, they are interchangeable with the base reference capability. It's for the same reason: all of these reference capabilities can be aliased as themselves.</li>
 </ul>
-<p><strong>Why do <code>ref^</code>, <code>val^</code>, <code>box^</code>, and <code>tag^</code> exist if they are interchangeable with their base capabilities?</strong> It's for two reasons: <strong>capability recovery</strong> and <strong>generics</strong>. We'll cover both of those later.</p>
+<p><strong>Why do <code>ref^</code>, <code>val^</code>, <code>box^</code>, and <code>tag^</code> exist if they are interchangeable with their base reference capabilities?</strong> It's for two reasons: <strong>reference capability recovery</strong> and <strong>generics</strong>. We'll cover both of those later.</p>
               
             </div>
           </div>

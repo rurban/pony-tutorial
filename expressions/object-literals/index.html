@@ -325,12 +325,19 @@
           
             <li>
     <ul class="subnav">
-    <li><span>Actors</span></li>
+    <li><span>Generics</span></li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../actors/behaviours/">Behaviours</a>
+        <a class="" href="../../generics/polymorphic-types/">Polymorphic types</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../generics/polymorphic-methods/">Polymorphic methods</a>
         
     </li>
 
@@ -350,28 +357,6 @@
         <a class="" href="../../composition-inheritance/code-sharing/">Code sharing</a>
         
     </li>
-<li>
-          
-            <li>
-    <ul class="subnav">
-    <li><span>Generics</span></li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../generics/polymorphic-types/">Polymorphic types</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../generics/polymorphic-methods/">Polymorphic methods</a>
-        
-    </li>
-
-        
-    </ul>
 <li>
           
             <li>
@@ -545,7 +530,7 @@ end
 </code></pre>
 
 <p>When we assign to a field in the constructor, we are <em>capturing</em> from the lexical scope the object literal is in. Pretty fun stuff! It lets us have arbitrarily complex <strong>closures</strong> that can even have multiple entry points (i.e. functions you can call on a closure).</p>
-<p>An object literal is always returned as a <code>ref</code>, like a default construtor on a class. To get another capability (<code>iso</code>, <code>val</code>, etc.), you can wrap the object literal in a <code>recover</code> expression.</p>
+<p>An object literal is always returned as a <code>ref</code>, like a default construtor on a class. To get another refrence capability (<code>iso</code>, <code>val</code>, etc.), you can wrap the object literal in a <code>recover</code> expression.</p>
 <h1 id="lambdas">Lambdas</h1>
 <p>Arbitrarily complex closures are nice, but sometimes we just want a simple closure. In Pony, you can use the <code>lambda</code> keyword for that.</p>
 <pre><code class="pony">lambda(s: String): String =&gt; &quot;lambda: &quot; + s end

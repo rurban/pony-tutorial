@@ -325,12 +325,19 @@
           
             <li>
     <ul class="subnav">
-    <li><span>Actors</span></li>
+    <li><span>Generics</span></li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../actors/behaviours/">Behaviours</a>
+        <a class="" href="../../generics/polymorphic-types/">Polymorphic types</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../generics/polymorphic-methods/">Polymorphic methods</a>
         
     </li>
 
@@ -350,28 +357,6 @@
         <a class="" href="../../composition-inheritance/code-sharing/">Code sharing</a>
         
     </li>
-<li>
-          
-            <li>
-    <ul class="subnav">
-    <li><span>Generics</span></li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../generics/polymorphic-types/">Polymorphic types</a>
-        
-    </li>
-
-        
-            
-    <li class="toctree-l1 ">
-        <a class="" href="../../generics/polymorphic-methods/">Polymorphic methods</a>
-        
-    </li>
-
-        
-    </ul>
 <li>
           
             <li>
@@ -561,7 +546,7 @@ f2(3)
 
 <h1 id="partial-application-is-an-object-literal">Partial application is an object literal</h1>
 <p>Under the hood, we're assembling an object literal for partial application. It captures some of the lexical scope as fields, and has an <code>apply</code> method that takes some, possibly reduced, number of arguments. This is actually done as sugar, by rewriting the abstract syntax tree for partial application to be an object literal, before code generation.</p>
-<p>That means partial application results in an anonymous class, and returns a <code>ref</code>. If you need another capability, you can wrap partial application in a <code>recover</code> expression.</p>
+<p>That means partial application results in an anonymous class, and returns a <code>ref</code>. If you need another reference capability, you can wrap partial application in a <code>recover</code> expression.</p>
               
             </div>
           </div>

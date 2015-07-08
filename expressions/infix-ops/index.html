@@ -508,7 +508,7 @@
 a &lt; b
 </code></pre>
 
-<p>Pony has pretty much the same set of infix operators as other langauges.</p>
+<p>Pony has pretty much the same set of infix operators as other languages.</p>
 <h1 id="precedence">Precedence</h1>
 <p>When using infix operators in complex expressions a key question is the <strong>precedence</strong>, i.e. which operator is evaluated first. Given this expression:</p>
 <pre><code class="pony">1 + 2 * 3
@@ -516,7 +516,7 @@ a &lt; b
 
 <p>We will get a value of 9 if we evaluate the addition first and 7 if we evaluate the multiplication first. In mathematics there are rules about the order in which to evaluate operators and most programming languages follow this approach.</p>
 <p>The problem with this is that the programmer has to remember the order and people aren't very good at things like that. Most people will remember to do multiplication before addition, but what about left bit shifting versus bitwise and? Sometimes people misremember (or guess wrong) and that leads to bugs. Worse, those bugs are often very hard to spot.</p>
-<p>Pony takes a different approach and outlaws infix precedence. Any expression where more than one infix operator is used <strong>must</strong> use parentheses to remove the ambiguity. If you failure to do this the compiler will complain.</p>
+<p>Pony takes a different approach and outlaws infix precedence. Any expression where more than one infix operator is used <strong>must</strong> use parentheses to remove the ambiguity. If you fail to do this the compiler will complain.</p>
 <p>This means that the example above is illegal in Pony and should be rewritten as:</p>
 <pre><code class="pony">1 + (2 * 3)
 </code></pre>
@@ -657,7 +657,7 @@ class Foo
 <p>For <code>or</code>, if the first operand is <strong>true</strong> then the second operand is not evaluated, since it cannot affect the result.</p>
 <p>This is a special feature built into the compiler, it cannot be used with operator aliasing for any other type.</p>
 <h1 id="unary-operators">Unary operators</h1>
-<p>The unary operators are handled in the same manor, but with only one operand. For example the following expressions are equivalent:</p>
+<p>The unary operators are handled in the same manner, but with only one operand. For example the following expressions are equivalent:</p>
 <pre><code class="pony">-x
 x.neg()
 </code></pre>

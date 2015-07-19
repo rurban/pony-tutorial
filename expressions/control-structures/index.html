@@ -527,7 +527,7 @@ else
 end
 </code></pre>
 
-<p>Often you want to test more than condition in one go, giving you more than two possible outcomes. You can nest <code>if</code> statements, but this quickly gets ugly:</p>
+<p>Often you want to test more than one condition in one go, giving you more than two possible outcomes. You can nest <code>if</code> statements, but this quickly gets ugly:</p>
 <pre><code class="pony">if a == b then
   env.out.print(&quot;they are the same&quot;)
 else
@@ -601,7 +601,7 @@ end
 <p><strong>But what if the condition evaluates to false the first time we try, then we don't go round the loop at all?</strong> In Pony <code>while</code> expressions can also have an <code>else</code> block. In general, Pony <code>else</code> blocks provide a value when the expression they are attached to doesn't. A <code>while</code> doesn't have a value to give if the condition evaluates to false the first time, so the <code>else</code> provides it instead.</p>
 <p><strong>So is this like an else block on a while loop in Python?</strong> No, this is very different. In Python the <code>else</code> is run when the <code>while</code> completes. In Pony the <code>else</code> is only run when the expression in the <code>while</code> isn't.</p>
 <h2 id="break">Break</h2>
-<p>Sometimes you want to stop part-way through a loop and give up altogether. Pony has the <code>break</code> keyword for this and it is very similar to its counterpart in langauges like C++, C# and Python.</p>
+<p>Sometimes you want to stop part-way through a loop and give up altogether. Pony has the <code>break</code> keyword for this and it is very similar to its counterpart in languages like C++, C# and Python.</p>
 <p><code>break</code> immediately exits from the innermost loop it's in. Since the loop has to return a value <code>break</code> can take an expression. This is optional and if it's missed out a value of <code>None</code> is returned.</p>
 <p>Let's have an example. Suppose you want to go through a list of names you're getting from somewhere, looking for either "Jack" or "Jill". If neither of those appear you'll just take the last name you're given and if you're not given any names at all you'll use "Herbert".</p>
 <pre><code class="pony">var name =
@@ -621,7 +621,7 @@ end
 <p>The <code>else</code> block provides our value of "Herbert" if there are no names available at all.</p>
 <p><strong>Can I break out of multiple, nested loops like the Java labelled break?</strong> No, Pony does not support that. If you need to break out of multiple loops you should probably refactor your code or use a worker function.</p>
 <h2 id="continue">Continue</h2>
-<p>Sometimes you want to stop part-way through one loop iteration and move onto the next. Like other languages Pony uses the <code>continue</code> keywords for this.</p>
+<p>Sometimes you want to stop part-way through one loop iteration and move onto the next. Like other languages Pony uses the <code>continue</code> keyword for this.</p>
 <p><code>continue</code> stops executing the current iteration of the innermost loop it's in and evaluates the condition ready for the next iteration.</p>
 <p>If <code>continue</code> is executed during the last iteration of the loop then we have no value to return from the loop. In this case we use the loop's <code>else</code> expression to get a value. As with the <code>if</code> expression if no <code>else</code> expression is provided <code>None</code> is returned.</p>
 <p><strong>Can I continue an outer, nested loop like the Java labelled continue?</strong> No, Pony does not support that. If you need to continue an outer loop you should probably refactor your code.</p>

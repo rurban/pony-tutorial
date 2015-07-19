@@ -506,7 +506,7 @@
           <div role="main">
             <div class="section">
               
-                <p>Like most other programming language Pony allows you to store data in variables. There are a few different kinds of variables which have different lifetimes and are used for slightly different purposes.</p>
+                <p>Like most other programming languages Pony allows you to store data in variables. There are a few different kinds of variables which have different lifetimes and are used for slightly different purposes.</p>
 <h1 id="local-variables">Local variables</h1>
 <p>Local variables in Pony work very much as they do in other languages, allowing you to store temporary values while you perform calculations. Local variables live within a chunk of code (they are <em>local</em> to that chunk) and are created every time that code chunk executes and disposed of when it completes.</p>
 <p>To define a local variable the <code>var</code> keyword is used (<code>let</code> can also be used, but we'll get to that later). Right after the <code>var</code> comes the variable's name, and then you can (optionally) put a <code>:</code> followed by the variable's type. For example:</p>
@@ -547,7 +547,7 @@ y = 6  // Error, y is let
 
 <p>You never have to declare variables as <code>let</code>, but if you know you're never going to change a variable then using <code>let</code> is a good way to catch errors. It can also serve as a useful comment, indicating the value is not meant to be changed.</p>
 <h1 id="fields">Fields</h1>
-<p>In Pony, fields are variables that live within objects. They work like fields in other object-oriented langauges.</p>
+<p>In Pony, fields are variables that live within objects. They work like fields in other object-oriented languages.</p>
 <p>Fields have the same lifetime as the object they're in, rather than being scoped. They are set up by the object constructor and disposed of along with the object.</p>
 <p>If the name of a field starts with <code>_</code>, it's <strong>private</strong>. That means only the type the field is in can have code that reads or writes that field. Otherwise, the field is <strong>public</strong>, and can be read or written anywhere.</p>
 <p>Just like local variables, fields can be <code>var</code> or <code>let</code>. They can also have initial value assigned in their definition, just like local variables, or they can be given their initial value in a constructor.</p>

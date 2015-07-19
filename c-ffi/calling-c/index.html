@@ -543,7 +543,7 @@ class SSLContext val
 <p>In Pony String is an object with a header and fields, but in C a char* is simply a pointer to character data. The .cstring() function on String provides us with a valid pointer to hand to C. Our fwrite example above makes use of this for the first argument.</p>
 <p>Pony classes corresponds directly to pointers to the class in C.</p>
 <p>For C pointers to simple types, such as U64, the Pony <code>Pointer[]</code> polymorphic type should be used, with a <code>tag</code> reference capability. <code>Pointer[U8] tag</code> should be used for void*. This can be seen in our SSL_CTX_ctrl example above.</p>
-<p>To pass pointers to values to C an ampersand (&amp;) can be used, just like taking an address in C. This is done in the standard library to pass the address of a U64 to an FFI functions that takes a uint64_t* as an out parameter:</p>
+<p>To pass pointers to values to C an ampersand (&amp;) can be used, just like taking an address in C. This is done in the standard library to pass the address of a U64 to an FFI function that takes a uint64_t* as an out parameter:</p>
 <pre><code class="pony">var len = U64(0)
 @pcre2_substring_length_bynumber_8[I32](_match, i.u32(), &amp;len)
 </code></pre>

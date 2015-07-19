@@ -506,7 +506,7 @@
                 <p>Like other object-oriented languages, Pony has <strong>subtyping</strong>. That is, some types serve as <em>categories</em> that other types can be members of.</p>
 <p>There are two kinds of <strong>subtyping</strong> in programming languages: <strong>nominal</strong> and <strong>structural</strong>. They're subtly different, and most programming languages only have one or the other. Pony has both!</p>
 <h1 id="nominal-subtyping">Nominal subtyping</h1>
-<p>This kind of subytping is called <strong>nominal</strong> because it is all about <strong>names</strong>.</p>
+<p>This kind of subtyping is called <strong>nominal</strong> because it is all about <strong>names</strong>.</p>
 <p>If you've done object-oriented programming before, you may have seen a lot of discussion about <em>single inheritance</em>, <em>multiple inheritance</em>, <em>mixins</em>, <em>traits</em>, and similar concepts. These are all examples of <strong>nominal subtyping</strong>.</p>
 <p>The core idea is that you have a type that declares it has a relationship to some category type. In Java, for example, a <strong>class</strong> (a concrete type) can <strong>implement</strong> an <strong>interface</strong> (a category type). In Java, this means the class is now in the category that the interface represents. The compiler will check that the class actually provides everything it needs to.</p>
 <h1 id="traits">Traits</h1>
@@ -527,7 +527,7 @@ class Bob is Named
 <p>Here, we have a class <code>Larry</code> that has a <code>name</code> function with the same signature. But <code>Larry</code> does <strong>not</strong> provide <code>Named</code>!</p>
 <p><strong>Wait, why not?</strong> Because <code>Larry</code> doesn't say it <code>is Named</code>. Remember, traits are <strong>nominal</strong>: a type that wants to provide a trait has to explicitly declare that it does. And <code>Larry</code> doesn't.</p>
 <h1 id="structural-subtyping">Structural subtyping</h1>
-<p>There's another kind of subtyping, where the name doesn't matter. It's called <strong>strutural subtyping</strong>, which means that it's all about how a type is built, and nothing to do with names.</p>
+<p>There's another kind of subtyping, where the name doesn't matter. It's called <strong>structural subtyping</strong>, which means that it's all about how a type is built, and nothing to do with names.</p>
 <p>A concrete type is a member of a structural category if it happens to have all the needed elements, no matter what it happens to be called.</p>
 <p>If you've used Go, you'll recognise that Go interfaces are structural types.</p>
 <h1 id="interfaces">Interfaces</h1>

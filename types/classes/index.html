@@ -537,7 +537,7 @@
 
   new hungry(name': String, hunger': U64) =&gt;
     name = name'
-    _hunger_level = hunger
+    _hunger_level = hunger'
 </code></pre>
 
 <p>Here, we have two constructors, one that creates a <code>Wombat</code> that isn't hungry, and another that creates a <code>Wombat</code> that might be hungry or might not.</p>
@@ -604,7 +604,7 @@ b = temp
 </code></pre>
 
 <h1 id="what-about-inheritance">What about inheritance?</h1>
-<p>In some object-oriented languages, a type can <em>inherit</em> from another type, like how in Java something can <strong>extend</strong> something else. Pony doesn't do that. Instead, Pony prefers <em>composition</em> to <em>inheritence</em>. In other words, instead of getting code reuse by saying something <strong>is</strong> something else, you get it by saying something <strong>has</strong> something else.</p>
+<p>In some object-oriented languages, a type can <em>inherit</em> from another type, like how in Java something can <strong>extend</strong> something else. Pony doesn't do that. Instead, Pony prefers <em>composition</em> to <em>inheritance</em>. In other words, instead of getting code reuse by saying something <strong>is</strong> something else, you get it by saying something <strong>has</strong> something else.</p>
 <p>On the other hand, Pony has a powerful <strong>trait</strong> system (similar to Java 8 interfaces that can have default implementations) and a powerful <strong>interface</strong> system (similar to Go interfaces, i.e. structurally typed).</p>
 <p>We'll talk about all that stuff in detail later.</p>
               

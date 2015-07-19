@@ -558,7 +558,7 @@ var bar = Bar(x, 37 where crash = false)
 var bar = Bar.create().apply(x, 37 where crash = false)
 </code></pre>
 
-<p><strong>What if the create has default arguments? Does I get the combined create-apply sugar if I want to use the defaults?</strong> The combined create-apply sugar can only be used when the create constructor has no arguments. If there are default arguments then this sugar cannot be used.</p>
+<p><strong>What if the create has default arguments? Do I get the combined create-apply sugar if I want to use the defaults?</strong> The combined create-apply sugar can only be used when the create constructor has no arguments. If there are default arguments then this sugar cannot be used.</p>
 <h1 id="update">Update</h1>
 <p>The <code>update</code> sugar allows any class to use an assignment to accept data. Many languages allow this for assigning into collections, for example a simple C array, <code>a[3] = x;</code>.</p>
 <p>In any assignment where the left hand side is a function call, Pony will translate this to a call to update, with the value from the right hand side as an extra argument. So:</p>

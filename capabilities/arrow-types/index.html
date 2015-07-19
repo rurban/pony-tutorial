@@ -503,7 +503,7 @@
                 <p>When we talked about <strong>reference capability composition</strong> and <strong>viewpoint adaptation</strong>, we dealt with cases where we know the reference capability of the origin. However, sometimes we don't know the precise reference capability of the origin.</p>
 <p>When that happens, we can write a <strong>viewpoint adapted type</strong>, which we call an <strong>arrow type</strong> because we write it with an <code>-&gt;</code>.</p>
 <h1 id="using-this-as-a-viewpoint">Using <code>this-&gt;</code> as a viewpoint</h1>
-<p>A function with a <code>box</code> receiver can be called with a <code>ref</code> receiver or a <code>val</code> receiver as well, since those are both subtypes of <code>box</code>. Sometimes, we want to be able to talk about a type takes this into account. For example:</p>
+<p>A function with a <code>box</code> receiver can be called with a <code>ref</code> receiver or a <code>val</code> receiver as well, since those are both subtypes of <code>box</code>. Sometimes, we want to be able to talk about a type to take this into account. For example:</p>
 <pre><code class="pony">class Wombat
   var _friend: Wombat
 

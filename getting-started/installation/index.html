@@ -524,7 +524,7 @@
 </code></pre>
 
 <h1 id="linux">Linux</h1>
-<p>Installers for various distributions to supply precompiled binaries are available. All linux installers are signed with the public key published <a href="http://ponylang.org/releases/buildbot@lists.ponylang.org.gpg.key">here</a>.</p>
+<p>Installers for various distributions to supply precompiled binaries are available. All linux installers are signed with the public key published <a href="http://releases.ponylang.org/buildbot@lists.ponylang.org.gpg.key">here</a>.</p>
 <h2 id="available-packages">Available packages</h2>
 <ul>
 <li><code>ponyc</code>: Recommended. Should work on most modern <code>x86_64</code> platforms.</li>
@@ -532,17 +532,17 @@
 </ul>
 <h2 id="apt-get-and-aptitude">Apt-get and Aptitude</h2>
 <p>First, to avoid warnings about an untrusted repository, you can trust <code>ponylang.org</code>:</p>
-<pre><code class="bash">$ wget -O - http://www.ponylang.org/releases/buildbot@lists.ponylang.org.gpg.key | sudo apt-key add -
+<pre><code class="bash">$ wget -O - http://releases.ponylang.org/buildbot@lists.ponylang.org.gpg.key | sudo apt-key add -
 </code></pre>
 
 <p><strong>Option 1:</strong> Install <code>python-software-properties</code> (Debian Wheezy and earlier, Ubuntu) or <code>software-properties-common</code> (Debian Jessy and later) for <code>add-apt-repository</code>. Then, add the ponylang.org repository:</p>
-<pre><code class="bash">$ sudo add-apt-repository &quot;deb http://ponylang.org/releases/apt ponyc main&quot;
-$ sudo add-apt-repository &quot;deb http://ponylang.org/releases/apt ponyc-avx2 main&quot;
+<pre><code class="bash">$ sudo add-apt-repository &quot;deb http://releases.ponylang.org/apt ponyc main&quot;
+$ sudo add-apt-repository &quot;deb http://releases.ponylang.org/apt ponyc-avx2 main&quot;
 </code></pre>
 
 <p><strong>Option 2</strong>: Manually add the following three lines to your <code>sources.list</code> (<code>/etc/apt/sources.list</code> on Ubuntu, and <code>/etc/apt-get/sources.list</code> on Debian):</p>
-<pre><code class="bash">deb http://ponylang.org/releases/apt ponyc main
-deb http://ponylang.org/releases/apt ponyc-avx2 main
+<pre><code class="bash">deb http://releases.ponylang.org/apt ponyc main
+deb http://releases.ponylang.org/apt ponyc-avx2 main
 </code></pre>
 
 <p>Then, update your repository cache:</p>
@@ -555,7 +555,7 @@ deb http://ponylang.org/releases/apt ponyc-avx2 main
 
 <h2 id="zypper">Zypper</h2>
 <p>First, add the ponylang.org repository:</p>
-<pre><code class="bash">$ sudo zypper ar -f http://www.ponylang.org/releases/yum/ponyc.repo
+<pre><code class="bash">$ sudo zypper ar -f http://releases.ponylang.org/yum/ponyc.repo
 </code></pre>
 
 <p>Install <code>ponyc</code> or <code>ponyc-avx2</code>:</p>
@@ -564,11 +564,11 @@ deb http://ponylang.org/releases/apt ponyc-avx2 main
 
 <h2 id="yum">YUM</h2>
 <p>First, add the ponylang.org repository:</p>
-<pre><code class="bash">$ sudo yum-config-manager --add-repo=http://www.ponylang.org/releases/yum/ponyc.repo
+<pre><code class="bash">$ sudo yum-config-manager --add-repo=http://releases.ponylang.org/yum/ponyc.repo
 </code></pre>
 
 <p><strong>Alternatively</strong>, if <code>yum-config-manager</code> is not available on your system, you can add the repository manually:</p>
-<pre><code class="bash">$  sudo wget -O /etc/yum.repos.d/ponyc.repo http://www.ponylang.org/releases/yum/ponyc.repo
+<pre><code class="bash">$  sudo wget -O /etc/yum.repos.d/ponyc.repo http://releases.ponylang.org/yum/ponyc.repo
 </code></pre>
 
 <p>Install <code>ponyc</code> or <code>ponyc-avx2</code>:</p>
@@ -580,7 +580,7 @@ deb http://ponylang.org/releases/apt ponyc-avx2 main
 <h2 id="did-it-work">Did it work?</h2>
 <p>Running the following command should now display the installed version of <code>ponyc</code>:</p>
 <pre><code class="bash">$ ponyc --version
-0.1.6
+0.1.7
 </code></pre>
 
 <h1 id="downloads">Downloads</h1>

@@ -520,7 +520,7 @@
 <p><strong>Shared mutable data is hard</strong></p>
 <p>The problem with concurrency is shared mutable data. If two different threads have access to the same piece of data then they might try to update it at the same time. At best this can lead to the two threads having different versions of the data. At worst the updates can interact badly resulting in the data being overwritten with garbage. The standard way to avoid these problems is to use locks to prevent data updates from happening at the same time. This causes big performance hits and is very difficult to get right, so it causes lots of bugs.</p>
 <p><strong>Immutable data can be safely shared</strong></p>
-<p>Any data that is immutable (i.e. it cannot can changed) is safe to use concurrently. Since it is immutable it is never updated and it's the updates that cause concurrency problems.</p>
+<p>Any data that is immutable (i.e. it cannot be changed) is safe to use concurrently. Since it is immutable it is never updated and it's the updates that cause concurrency problems.</p>
 <p><strong>Isolated data is safe</strong></p>
 <p>If a block of data has only one reference to it then we call it <strong>isolated</strong>. Since there is only one reference to it, isolated data cannot be <strong>shared</strong> by multiple threads, so there are no concurrency problems. Isolated data can be passed between multiple threads. As long as only one of them has a reference to it at a time then the data is still safe from concurrency problems.</p>
 <p><strong>Isolated data may be complex</strong></p>

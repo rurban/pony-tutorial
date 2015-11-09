@@ -412,6 +412,12 @@
             
                 <li class="toctree-l3"><a href="#c-types">C types</a></li>
                 
+                    <li><a class="toctree-l4" href="#to-read-c-structs-from-ffi">To read c structs from FFI</a></li>
+                
+                    <li><a class="toctree-l4" href="#to-pass-c-structs-to-ffi">To pass c structs to FFI</a></li>
+                
+                    <li><a class="toctree-l4" href="#get-and-pass-pointers-to-ffi">Get and Pass Pointers to FFI</a></li>
+                
             
                 <li class="toctree-l3"><a href="#ffi-functions-raising-errors">FFI functions raising errors</a></li>
                 
@@ -546,6 +552,59 @@ class SSLContext val
 <p>To pass pointers to values to C an ampersand (&amp;) can be used, just like taking an address in C. This is done in the standard library to pass the address of a U64 to an FFI function that takes a uint64_t* as an out parameter:</p>
 <pre><code class="pony">var len = U64(0)
 @pcre2_substring_length_bynumber_8[I32](_match, i.u32(), &amp;len)
+</code></pre>
+
+<h2 id="to-read-c-structs-from-ffi">To read c structs from FFI</h2>
+<p>If you have a c struct like this</p>
+<pre><code class="c">typedef struct {
+  uint8_t code;
+  float x;
+  float y;
+} EGLEvent;
+
+EGLEvent getEvent() {
+    EGLEvent e = {1, ev.xconfigure.width, ev.xconfigure.height};
+    return e;
+}
+</code></pre>
+
+<p>the you can destructure it and get the values using a tuple</p>
+<pre><code class="pony">type EGLEvent is (U8, F32, F32)
+(var code, var x, var y) = @getEvent[EGLEvent]()
+</code></pre>
+
+<h2 id="to-pass-c-structs-to-ffi">To pass c structs to FFI</h2>
+<p>If you have a c struct like this</p>
+<pre><code class="c">typedef struct {
+  uint8_t code;
+  float x;
+  float y;
+} EGLEvent;
+
+void setEvent(EGLEvent e) {
+    printf(&quot;%d&quot;, e.code);
+}
+</code></pre>
+
+<p>then you call it like this</p>
+<pre><code class="pony">let e: EGLEvent = (4, 0, 0)
+@setEvent[None](e)
+</code></pre>
+
+<h2 id="get-and-pass-pointers-to-ffi">Get and Pass Pointers to FFI</h2>
+<p>To pass and receive pointers to c structs you need to declare pointer to primitives</p>
+<pre><code class="pony">primitive _XDisplayHandle
+primitive _EGLDisplayHandle
+
+let x_dpy = @XOpenDisplay[Pointer[_XDisplayHandle]](U32(0))
+if x_dpy.is_null() then
+  env.out.print(&quot;XOpenDisplay failed&quot;)
+end
+
+let e_dpy = @eglGetDisplay[Pointer[_EGLDisplayHandle]](x_dpy)
+if e_dpy.is_null() then
+  env.out.print(&quot;eglGetDisplay failed&quot;)
+end
 </code></pre>
 
 <h1 id="ffi-functions-raising-errors">FFI functions raising errors</h1>

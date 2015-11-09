@@ -450,6 +450,45 @@
         
             <ul>
             
+                <li class="toctree-l3"><a href="#enum-with-values">Enum with values</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#enum-with-values-with-namespace">Enum with values with namespace</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#enum-which-can-be-iterated">Enum which can be iterated</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#read-struct-values-from-ffi">Read Struct values from FFI</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#get-and-pass-pointers-to-ffi">Get and Pass Pointers to FFI</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#pass-an-array-of-values-to-ffi-todo">Pass an Array of values to FFI (TODO)</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#how-to-use-enviroment-variables">How to use enviroment variables</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#how-to-use-options">How to use options</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#how-to-write-tests">How to write tests</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#operator-overloading-easy-for-copy-and-paste">Operator Overloading (easy for copy and paste)</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#create-empty-functions-in-a-class">Create empty functions in a class</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#how-to-delegate-objects">How to Delegate objects</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#how-to-create-arrays-with-values">How to create Arrays with values</a></li>
+                
+            
             </ul>
         
     </li>
@@ -487,7 +526,213 @@
           <div role="main">
             <div class="section">
               
-                
+                <h3 id="enum-with-values">Enum with values</h3>
+<pre><code class="pony">primitive Black fun apply(): U32 =&gt; 0xFF000000
+primitive Red   fun apply(): U32 =&gt; 0xFFFF0000
+</code></pre>
+
+<h3 id="enum-with-values-with-namespace">Enum with values with namespace</h3>
+<pre><code class="pony">primitive Colors
+  fun black(): U32 =&gt; 0xFF000000
+  fun red(): U32 =&gt; 0xFFFF0000
+</code></pre>
+
+<h3 id="enum-which-can-be-iterated">Enum which can be iterated</h3>
+<pre><code class="pony">primitive Black
+primitive Blue
+primitive Red
+primitive Yellow
+
+type Colour is (Black | Blue | Red | Yellow)
+
+primitive ColourList
+  fun tag apply(): Array[Colour] =&gt;
+    [Black, Blue, Red, Yellow]
+
+for colour in ColourList().values() do
+end
+</code></pre>
+
+<h3 id="read-struct-values-from-ffi">Read Struct values from FFI</h3>
+<p>If you have a C struct which returns a struct with data like this</p>
+<pre><code class="c">typedef struct {
+  uint8_t code;
+  float x;
+  float y;
+} EGLEvent;
+
+EGLEvent getEvent() {
+    EGLEvent e = {1, ev.xconfigure.width, ev.xconfigure.height};
+    return e;
+}
+
+</code></pre>
+
+<p>the you can destructure it and get the values using a tuple</p>
+<pre><code class="pony">type EGLEvent is (U8, F32, F32)
+(var code, var x, var y) = @getEvent[EGLEvent]()
+</code></pre>
+
+<h3 id="get-and-pass-pointers-to-ffi">Get and Pass Pointers to FFI</h3>
+<pre><code class="pony">primitive _XDisplayHandle
+primitive _EGLDisplayHandle
+
+let x_dpy = @XOpenDisplay[Pointer[_XDisplayHandle]](U32(0))
+if x_dpy.is_null() then
+  env.out.print(&quot;XOpenDisplay failed&quot;)
+end
+
+let e_dpy = @eglGetDisplay[Pointer[_EGLDisplayHandle]](x_dpy)
+if e_dpy.is_null() then
+  env.out.print(&quot;eglGetDisplay failed&quot;)
+end
+</code></pre>
+
+<h3 id="pass-an-array-of-values-to-ffi-todo">Pass an Array of values to FFI (TODO)</h3>
+<pre><code class="pony">primitive _EGLConfigHandle
+let a = Array[U16](8)
+a.push(0x3040)
+a.push(0x4)
+a.push(0x3033)
+a.push(0x4)
+a.push(0x3022)
+a.push(0x8)
+a.push(0x3023)
+a.push(0x8)
+a.push(0x3024)
+let config = Pointer[_EGLConfigHandle]
+if @eglChooseConfig[U32](e_dpy, a, config, U32(1), Pointer[U32]) == 0 then
+    env.out.print(&quot;eglChooseConfig failed&quot;)
+end
+</code></pre>
+
+<h3 id="how-to-use-enviroment-variables">How to use enviroment variables</h3>
+<pre><code class="pony">actor Main
+
+  new create(env: Env) =&gt;
+    env.out.print(env.args.size().string()) // The no of arguments
+    for value in env.args.values() do
+      env.out.print(value)
+    end
+    try env.out.print(env.args(0)) end // Access the arguments the first one will always be the the appication name
+</code></pre>
+
+<h3 id="how-to-use-options">How to use options</h3>
+<pre><code class="pony">actor Main
+
+  new create(env: Env) =&gt;
+    var options = Options(env)
+
+    options
+      .add(&quot;output&quot;, &quot;o&quot;, StringArgument)
+
+    env.out.print(options.has_argument())
+
+    for option in options do
+      match option
+      | (&quot;output&quot;, var arg: String) =&gt; _outputFileName = arg.string()
+      | let err: ParseError =&gt;
+          err.report(env.out)
+          env.out.print(
+            &quot;&quot;&quot;
+            pony-embed [OPTIONS]
+              --output     name   string output filename.
+            &quot;&quot;&quot;
+          )
+      end
+    end
+
+</code></pre>
+
+<h3 id="how-to-write-tests">How to write tests</h3>
+<p>Just create a test.pony file</p>
+<pre><code class="pony">use &quot;ponytest&quot;
+
+actor Main is TestList
+  new create(env: Env) =&gt; PonyTest(env, this)
+  new make() =&gt; None
+
+  fun tag tests(test: PonyTest) =&gt;
+    test(_TestAddition)
+
+class iso _TestAddition is UnitTest
+  &quot;&quot;&quot;
+  Adding 2 numbers
+  &quot;&quot;&quot;
+  fun name(): String =&gt; &quot;u32/add&quot;
+
+  fun apply(h: TestHelper): TestResult =&gt;
+    h.expect_eq[U32](2 + 2, 4)
+</code></pre>
+
+<p>Some assertions you can make with the TestHelper are</p>
+<pre><code class="pony">fun tag log(msg: String, verbose: Bool = false)
+be fail() =&gt;
+be assert_failed(msg: String) =&gt;
+fun tag assert_true(actual: Bool, msg: String = &quot;&quot;) ?
+fun tag expect_true(actual: Bool, msg: String = &quot;&quot;): Bool
+fun tag assert_false(actual: Bool, msg: String = &quot;&quot;) ? 
+fun tag expect_false(actual: Bool, msg: String = &quot;&quot;): Bool
+fun tag assert_error(test: ITest, msg: String = &quot;&quot;) ?
+fun tag expect_error(test: ITest box, msg: String = &quot;&quot;): Bool
+fun tag assert_is (expect: Any, actual: Any, msg: String = &quot;&quot;) ?
+fun tag expect_is (expect: Any, actual: Any, msg: String = &quot;&quot;): Bool
+fun tag assert_eq[A: (Equatable[A] #read &amp; Stringable)] (expect: A, actual: A, msg: String = &quot;&quot;) ?
+fun tag expect_eq[A: (Equatable[A] #read &amp; Stringable)] (expect: A, actual: A, msg: String = &quot;&quot;): Bool
+</code></pre>
+
+<h3 id="operator-overloading-easy-for-copy-and-paste">Operator Overloading (easy for copy and paste)</h3>
+<pre><code class="pony">fun add(other: A): A
+fun sub(other: A): A
+fun mul(other: A): A
+fun div(other: A): A
+fun mod(other: A): A
+fun eq(other: A): Bool
+fun ne(other: A): Bool
+fun lt(other: A): Bool
+fun le(other: A): Bool
+fun ge(other: A): Bool
+fun gt(other: A): Bool
+fun shl(other: A): A
+fun shr(other: A): A
+fun op_and(other:A): A
+fun op_or(other: A): A
+fun op_xor(othr: A): A
+</code></pre>
+
+<h3 id="create-empty-functions-in-a-class">Create empty functions in a class</h3>
+<pre><code class="pony">class Test
+  fun alpha() =&gt;
+      &quot;&quot;&quot;
+      &quot;&quot;&quot;
+  fun beta() =&gt;
+      &quot;&quot;&quot;
+      &quot;&quot;&quot;
+</code></pre>
+
+<h3 id="how-to-delegate-objects">How to Delegate objects</h3>
+<pre><code class="pony">trait TAnimal
+  fun talk(): String
+
+class Cat is TAnimal
+  fun talk(): String =&gt;
+    &quot;Meow&quot;
+
+class CatToy is TAnimal
+  let _cat: Cat delegate TAnimal = Cat
+
+let animals: Array[TAnimal] = Array[TAnimal]
+animals.push(Cat.create())
+animals.push(CatToy.create())
+
+for animal in animals.values() do
+  env.out.print(animal.talk())
+end
+</code></pre>
+
+<h3 id="how-to-create-arrays-with-values">How to create Arrays with values</h3>
+<pre><code class="pony">let dice: Array[U32] = [1, 2, 3, 4, 5, 6]
+</code></pre>
               
             </div>
           </div>

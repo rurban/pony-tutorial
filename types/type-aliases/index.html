@@ -514,6 +514,29 @@ type Colour is (Red | Blue | Green)
 <p>There are two new concepts in there. The first is the type alias, introduced with the keyword <code>type</code>. It just means that the name that comes after <code>type</code> will be translated by the compiler to the type that comes after <code>is</code>.</p>
 <p>The second new concept is the type that comes after <code>is</code>. It's not a single type! Instead, it's a <strong>union</strong> type. You can read the <code>|</code> symbol as <strong>or</strong> in this context, so the type is "Red or Blue or Green".</p>
 <p>A union type is a form of <em>closed world</em> type. That is, it says every type that can possibly be a member of it. In contrast, object-oriented subtyping is usually <em>open world</em>, e.g. in Java, an interface can be implemented by any number of classes.</p>
+<p>You can also declare constants like in C or Go like this,</p>
+<pre><code class="pony">primitive Red    fun apply(): U32 =&gt; 0xFF0000FF
+primitive Green  fun apply(): U32 =&gt; 0x00FF00FF
+primitive Blue   fun apply(): U32 =&gt; 0x0000FFFF
+
+type Colour is (Red | Blue | Green)
+</code></pre>
+
+<p>or namespace them like this</p>
+<pre><code class="pony">primitive Colors
+  fun red(): U32 =&gt; 0xFF0000FF
+  fun green(): U32 =&gt; 0x00FF00FF
+</code></pre>
+
+<p>you might also want to iterate over the the enum like this to print its name for debugging purposes</p>
+<pre><code class="pony">primitive ColourList
+  fun tag apply(): Array[Colour] =&gt;
+    [Red, Green, Blue]
+
+for colour in ColourList().values() do
+end
+</code></pre>
+
 <h1 id="complex-types">Complex types</h1>
 <p>If a type is complicated, it can be nice to give it a mnemonic name. For example, if we want to say that a type must implement more than one trait, we could say:</p>
 <pre><code class="pony">interface HasName

@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Match - Pony Tutorial</title>
+  <title>Delegates - Pony Tutorial</title>
   
 
   <link rel="shortcut icon" href="../../img/favicon.ico">
@@ -21,7 +21,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Match";
+    var mkdocs_page_name = "Delegates";
   </script>
   
   <script src="../../js/jquery-2.1.1.min.js"></script>
@@ -108,56 +108,68 @@
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../types/static-vs-dynamic/">Static vs dynamic</a>
+        <a class="" href="../static-vs-dynamic/">Static vs dynamic</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../types/classes/">Classes</a>
+        <a class="" href="../classes/">Classes</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../types/primitives/">Primitives</a>
+        <a class="" href="../primitives/">Primitives</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../types/actors/">Actors</a>
+        <a class="" href="../actors/">Actors</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../types/traits-and-interfaces/">Traits and interfaces</a>
+        <a class="" href="../traits-and-interfaces/">Traits and interfaces</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../types/type-aliases/">Type aliases</a>
+        <a class="" href="../type-aliases/">Type aliases</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../../types/type-expressions/">Type expressions</a>
+        <a class="" href="../type-expressions/">Type expressions</a>
         
     </li>
 
         
             
-    <li class="toctree-l1 ">
-        <a class="" href="../../types/delegates/">Delegates</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">Delegates</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#delegates">Delegates</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#overrides">Overrides</a></li>
+                
+                    <li><a class="toctree-l4" href="#disambiguation">Disambiguation</a></li>
+                
+            
+            </ul>
         
     </li>
 
@@ -356,38 +368,15 @@
 
         
             
-    <li class="toctree-l1 current">
-        <a class="current" href="./">Match</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#match-expressions">Match expressions</a></li>
-                
-                    <li><a class="toctree-l4" href="#else-cases">Else cases</a></li>
-                
-            
-                <li class="toctree-l3"><a href="#matching-on-values">Matching on values</a></li>
-                
-            
-                <li class="toctree-l3"><a href="#matching-on-type-and-value">Matching on type and value</a></li>
-                
-                    <li><a class="toctree-l4" href="#captures">Captures</a></li>
-                
-            
-                <li class="toctree-l3"><a href="#matching-tuples">Matching tuples</a></li>
-                
-            
-                <li class="toctree-l3"><a href="#guards">Guards</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../../pattern-matching/match/">Match</a>
         
     </li>
 
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../as/">As</a>
+        <a class="" href="../../pattern-matching/as/">As</a>
         
     </li>
 
@@ -503,11 +492,11 @@
     
       
         
-          <li>Pattern Matching &raquo;</li>
+          <li>Types &raquo;</li>
         
       
     
-    <li>Match</li>
+    <li>Delegates</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -517,135 +506,137 @@
           <div role="main">
             <div class="section">
               
-                <p>If we want to compare an expression to a value then we use an <code>if</code>. But if we want to compare an expression to a lot of values this gets very tedious. Pony provides a powerful pattern matching facility, combining matching on values and types, without any special code required.</p>
-<h1 id="match-expressions">Match expressions</h1>
-<p>Here's a simple example of a match expression that produces a string.</p>
-<pre><code class="pony">match x
-| 2 =&gt; &quot;int&quot;
-| 2.0 =&gt; &quot;float&quot;
-| &quot;2&quot; =&gt; &quot;string&quot;
-else
-  &quot;something else&quot;
-end
+                <p>Like some other object-oriented languages, Pony has <strong>delegates</strong>. That is, some types serve as <strong>mixins</strong> that other types can use.</p>
+<h1 id="delegates">Delegates</h1>
+<p>Any <strong>trait</strong> or <strong>interface</strong> can be used as a <em>mixin</em> by exploiting delegate type declarations.</p>
+<pre><code class="pony">trait Wombat
+  fun box battle_call() : String val =&gt; 
+    &quot;Huzzah!&quot;
+
+class SimpleWombat is Wombat
+
+actor Main is Wombat
+  let w : SimpleWombat delegate Wombat = SimpleWombat
+
+  new create(env : Env) =&gt;
+    env.out.print(&quot;Battle cry: &quot; + battle_call())
 </code></pre>
 
-<p>If you're used to functional languages this should be very familiar.</p>
-<p>For those readers more familiar with the C and Java family of languages, think of this like a switch statement. But you can switch on values other than just integers, like Strings. In fact you can switch on any type that provides a comparison function, including your own classes. And you can also switch on the runtime type of an expression.</p>
-<p>A match starts with the keyword <code>match</code>, followed by the expression to match, which is known as the match <strong>operand</strong>. In this example the operand is just the variable <code>x</code>, but it can be any expression.</p>
-<p>Most of the match expression consists of a series of <strong>cases</strong> that we match against. Each case consists of a pipe symbol ('|'), the <strong>pattern</strong> to match against, an arrow ('=&gt;') and the expression to evaluate if the case matches.</p>
-<p>We go through the cases one by one until we find one that matches. (Actually, in practice the compiler is a lot more intelligent than that and uses a combination of sequential checks and jump tables to be as efficient as possible.)</p>
-<p>Note that each match case has an expression to evaluate and these are all independent. There is no "fall through" between cases as there is in languages such as C.</p>
-<p>If the value produced by the match expression isn't used then the cases can omit the arrow and expression to evaluate. This can be useful for excluding specific cases before a more general case.</p>
-<h2 id="else-cases">Else cases</h2>
-<p>As with all Pony control structures the else case for a match expression is used if we have no other value, i.e. if none of our cases match. The else case, if there is one, <strong>must</strong> come at the end of the match, after all of the specific cases.</p>
-<p>If the value the match expression results in is used then you need to have an else case, even if it can never actually be reached. If you omit it a default will be added which evaluates to <code>None</code>. The compiler currently isn't clever enough to spot when the other cases are exhaustive and so the else is not needed. This will be changed later.</p>
-<h1 id="matching-on-values">Matching on values</h1>
-<p>The simplest match expression just matches on value.</p>
-<pre><code class="pony">fun f(x: U32): String =&gt;
-  match x
-  | 1 =&gt; &quot;one&quot;
-  | 2 =&gt; &quot;two&quot;
-  | 3 =&gt; &quot;three&quot;
-  | 5 =&gt; &quot;not four&quot;
-  else
-    &quot;something else&quot;
-  end
+<p>In this example, we have defined a trait named <code>Wombat</code> with a function <code>battle_call</code> that returns
+a <code>String</code> value. A <strong>trait</strong> looks a bit like a <strong>class</strong> but it can't have any fields. It can
+however have a default implementation such as it does in this case.</p>
+<p>The class <code>SimpleWombat</code> supports this trait and the actor <code>Main</code>, also supports the <code>Wombat</code>
+trait. The actor <code>Main</code> delegates its <strong>Wombat</strong>ness to the <code>SimpleWombat</code> class, which provides
+a default implementation of <code>battle_call</code>.</p>
+<h1 id="overrides">Overrides</h1>
+<p>We can, of course, override this default behaviour simply by providing our own implementation of the
+<code>battle_call</code> function ourselves, as below:</p>
+<pre><code class="pony">class KungFuWombat is Wombat
+  fun box battle_call() : String val =&gt;
+    &quot;Bonzai!&quot;
 </code></pre>
 
-<p>For value matching the pattern is simply the value we want to match to, just like a C switch statement. The case with the same value as the operand wins and we use its expression.</p>
-<p>The compiler calls the eq() function on the operand, passing the pattern as the argument. This means that you can use your own types as match operands and patterns, as long as you define an eq() function.</p>
-<pre><code class="pony">class Foo
-  var _x: U32
+<p>And adapting our delegate to use this alternative type of Wombat:</p>
+<pre><code class="pony">actor Main is Wombat
+  let w : SimpleWombat delegate Wombat = KungFuWombat
 
-  new create(x: U32) =&gt;
-    _x = x
+  new create(env : Env) =&gt;
+    env.out.print(&quot;Battle cry: &quot; + battle_call())
+</code></pre>
 
-  fun eq(that: Foo): Bool =&gt;
-    _x == that._x
+<p>However, now that we have two choices of Wombat, we can tune the type declaration to allow
+more flexibility at runtime:</p>
+<pre><code class="pony">use &quot;time&quot;
 
-actor Main
-  fun f(x: Foo): String =&gt;
-    match x
-    | Foo(1) =&gt; &quot;one&quot;
-    | Foo(2) =&gt; &quot;two&quot;
-    | Foo(3) =&gt; &quot;three&quot;
-    | Foo(5) =&gt; &quot;not four&quot;
+...pony
+
+actor Main is Wombat
+  let w : Wombat delegate Wombat
+
+  new create(env : Env) =&gt;
+    w = match (Time.nanos() and 1) == 1
+    | true =&gt; KungFuWombat
+    else SimpleWombat
+    end 
+    env.out.print(&quot;Battle cry: &quot; + battle_call())
+</code></pre>
+
+<h2 id="disambiguation">Disambiguation</h2>
+<p>Above, we don't know what kind of <code>Wombat</code> we're going to get. But we know we're going to
+get either a <code>KungFuWombat</code> or a <code>SimpleWombat</code>. Sometimes though, things get a little more
+complicated in real code:</p>
+<pre><code class="pony">trait Drone
+  fun box battle_call() : String val =&gt; 
+    &quot;Beep Boop!&quot;
+
+class DroneWombat is ( Drone &amp; Wombat)
+  fun box battle_call() : String val =&gt;
+    &quot;Beep boop Huzzah!&quot;
+</code></pre>
+
+<p>Here, even though both <code>Drone</code> and <code>Wombat</code> provide function <code>battle_call</code> we explicitly
+disambiguate that a <code>DroneWombat</code>'s battle call, is like a mechanized <code>SimpleWombat</code>. So
+we can use our <code>DroneWombat</code> just like a <code>Drone</code> or a <code>Wombat</code>.</p>
+<pre><code class="pony">actor Main is Wombat
+  let w : Wombat delegate Wombat = DroneWombat
+
+  new create(env : Env) =&gt;
+    env.out.print(&quot;Battle cry: &quot; + battle_call())
+</code></pre>
+
+<p>Sometimes though, we won't be so lucky:</p>
+<pre><code class="shell">/WombatWars/troops.pony:26:1: clashing delegates for method battle_call, local disambiguation required
+actor Main is Wombat
+^
+/WombatWars/troops.pony:27:2: field d delegates to battle_call via $0
+ let d : Wombat delegate Wombat = DroneWombat
+ ^
+/WombatWars/troops.pony:28:2: field k delegates to battle_call via $0
+ let k : Wombat delegate Wombat = KungFuWombat
+ ^
+[Finished in 0.2s with exit code 255]
+</code></pre>
+
+<p>What just happened? Our main actor has two battle_call functions available and
+cannot unambiguously choose one. So we need to make disambiguate explicitly:</p>
+<pre><code class="pony">actor Main is Wombat
+ let d : Wombat delegate Wombat = DroneWombat
+ let k : Wombat delegate Wombat = KungFuWombat
+
+  new create(env : Env) =&gt;
+    env.out.print(&quot;Battle cry: &quot; + battle_call())
+
+  fun box battle_call() : String val =&gt;
+    &quot;Bonzai! Beep boop! Huzzah!&quot;
+</code></pre>
+
+<p>We can also choose our wombat delegates based on custom logic in the constructor:</p>
+<pre><code class="pony">actor Main is Wombat
+ let d : Wombat delegate Wombat = DroneWombat
+ let k : Wombat delegate Wombat = KungFuWombat
+
+  new create(env : Env) =&gt;
+    let x = Time.nanos() % 4
+
+    let chosen_wombat = match x
+    | 0 =&gt; SimpleWombat
+    | 1 =&gt; k
+    | 2 =&gt; d
     else
-      &quot;something else&quot;
+      this
     end
+    env.out.print(&quot;Battle cry: &quot; + chosen_wombat.battle_call())
+
+  fun box battle_call() : String val =&gt;
+    &quot;Bonzai! Beep boop! Huzzah!&quot;
 </code></pre>
 
-<h1 id="matching-on-type-and-value">Matching on type and value</h1>
-<p>Matching on value is fine if the match operand and case patterns have all the same type. However match can cope with multiple different types. Each case pattern is first checked to see if it is the same type as the runtime type of the operand. Only then will the values be compared.</p>
-<pre><code class="pony">fun f(x: (U32 | String | None)): String =&gt;
-  match x
-  | None =&gt; &quot;none&quot;
-  | 2 =&gt; &quot;two&quot;
-  | 3 =&gt; &quot;three&quot;
-  | &quot;5&quot; =&gt; &quot;not four&quot;
-  else
-    &quot;something else&quot;
-  end
-</code></pre>
-
-<p>In many languages using runtime type information is very expensive and so it is generally avoided whenever possible.</p>
-<p>In Pony it's cheap. Really cheap. Pony's "whole program" approach to compilation means the compiler can work out as much as possible at compile time. The runtime cost of each type check is generally a single pointer comparison. Plus of course, any checks which can be fully determined at compile time are. So for up casts there's no runtime cost at all.</p>
-<h2 id="captures">Captures</h2>
-<p>Sometimes you want to be able to match on type, for any value of that type. For this you use a <strong>capture</strong>. This defines a local variable, valid only within the case, containing the value of the operand. If the operand is not of the specified type then the case doesn't match.</p>
-<p>Captures look just like variable declarations within the pattern. Like normal variables they can be declared as var or let. If you're not going to reassign them within the case expression it is good practice to use let.</p>
-<pre><code class="pony">fun f(x: (U32 | String | None)): String =&gt;
-  match x
-  | None =&gt; &quot;none&quot;
-  | 2 =&gt; &quot;two&quot;
-  | 3 =&gt; &quot;three&quot;
-  | let u: U32 =&gt; &quot;other integer&quot;
-  | let s: String =&gt; s
-  else
-    &quot;something else&quot;
-  end
-</code></pre>
-
-<p><strong>Can I omit the type from a capture, like I can from a local variable?</strong> Unfortunately no. Since we match on type and value the compiler has to know what type the pattern is, so it can't be inferred.</p>
-<h1 id="matching-tuples">Matching tuples</h1>
-<p>If you want to match on more than one operand at once then you can simply use a tuple. Cases will only match if <strong>all</strong> the tuple elements match.</p>
-<pre><code class="pony">fun f(x: (String | None), y: U32): String =&gt;
-  match (x, y)
-  | (None, let y: U32) =&gt; &quot;none&quot;
-  | (let s: String, 2) =&gt; s + &quot; two&quot;
-  | (let s: String, 3) =&gt; s + &quot; three&quot;
-  | (let s: String, let u: U32) =&gt; s + &quot; other integer&quot;
-  else
-    &quot;something else&quot;
-  end
-</code></pre>
-
-<p><strong>Do I have to specify all the elements in a tuple?</strong> No you don't. Any tuple elements in a pattern can be marked as "don't care" by using an underscore ('_'). The first and fourth cases in our example don't actually care about the U32 element, so we can ignore it.</p>
-<pre><code class="pony">fun f(x: (String | None), y: U32): String =&gt;
-  match (x, y)
-  | (None, _) =&gt; &quot;none&quot;
-  | (let s: String, 2) =&gt; s + &quot; two&quot;
-  | (let s: String, 3) =&gt; s + &quot; three&quot;
-  | (let s: String, _) =&gt; s + &quot; other integer&quot;
-  else
-    &quot;something else&quot;
-  end
-</code></pre>
-
-<h1 id="guards">Guards</h1>
-<p>In addition to matching on types and values each case in a match can also have a guard condition. This is simply an expression, evaluated <strong>after</strong> type and value matching has occurred, that must give the value true for the case to match. If the guard is false then the case doesn't match and we move onto the next in the usual way.</p>
-<p>Guards are introduced with the <code>where</code> keyword.</p>
-<p>A guard expression may use any captured variables from that case, which allows for handling ranges and complex functions.</p>
-<pre><code class="pony">fun f(x: (String | None), y: U32): String =&gt;
-  match (x, y)
-  | (None, _) =&gt; &quot;none&quot;
-  | (let s: String, 2) =&gt; s + &quot; two&quot;
-  | (let s: String, 3) =&gt; s + &quot; three&quot;
-  | (let s: String, let u: U32) where u &gt; 14 =&gt; s + &quot; other big integer&quot;
-  | (let s: String, _) =&gt; s + &quot; other small integer&quot;
-  else
-    &quot;something else&quot;
-  end
-</code></pre>
+<p>Delegates are a convenient and flexible way to reuse, mixin, and/or adapt
+code to different strategies or polices allowing for a very high degree of
+flexibility in composing reasonably complex software components from relatively simple
+parts.</p>
+<p>In pony, delegates can benefit from <em>nominal</em> ( via <strong>traits</strong> ) or implicit or explicit <em>structural</em> ( via <strong>interfaces</strong> ) subtyping and local disambiguation where necessary, whilst sensible default
+implementations allow for maximizing code reuse.</p>
               
             </div>
           </div>
@@ -653,10 +644,10 @@ actor Main
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../as/" class="btn btn-neutral float-right" title="As"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../../expressions/variables/" class="btn btn-neutral float-right" title="Variables"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../../composition-inheritance/code-sharing/" class="btn btn-neutral" title="Code sharing"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../type-expressions/" class="btn btn-neutral" title="Type expressions"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -682,10 +673,10 @@ actor Main
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../../composition-inheritance/code-sharing/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../type-expressions/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../as/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../../expressions/variables/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

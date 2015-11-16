@@ -529,7 +529,7 @@
 </code></pre>
 
 <p>Here, we have a <code>ListValues</code> type that has two type parameters, <code>A</code> and <code>N</code>. In addition, <code>N</code> has a constraint: it has to be a subtype of <code>ListNode[A] box</code>. That's all fine and well, but we also say the <code>ListValues[A, N]</code> provides <code>Iterator[N-&gt;A]</code>. That's the interesting bit: we provide an interface that let's us iterate over values of the type <code>N-&gt;A</code>.</p>
-<p>That means we'll be returning objects of the type <code>A</code>, but the reference capability will be the however an object of type <code>N</code> would see an object of type <code>A</code>.</p>
+<p>That means we'll be returning objects of the type <code>A</code>, but the reference capability will be the same as an object of type <code>N</code> would see an object of type <code>A</code>.</p>
 <h1 id="using-box-as-a-viewpoint">Using <code>box-&gt;</code> as a viewpoint</h1>
 <p>There's one more way we use arrow types, and it's also related to generics. Sometimes we want to talk about a type parameter as it is seen by some unknown type, <em>as long as that type can read the type parameter</em>.</p>
 <p>In other words, the unknown type will be a subtype of <code>box</code>, but that's all we know. Here's an example from the standard library:</p>

@@ -530,12 +530,12 @@ type Colour is (Red | Blue | Green)
 </code></pre>
 
 <p>or namespace them like this</p>
-<pre><code class="pony">primitive Colors
+<pre><code class="pony">primitive Colours
   fun red(): U32 =&gt; 0xFF0000FF
   fun green(): U32 =&gt; 0x00FF00FF
 </code></pre>
 
-<p>you might also want to iterate over the the enum like this to print its name for debugging purposes</p>
+<p>You might also want to iterate over the enum like this to print its name for debugging purposes</p>
 <pre><code class="pony">primitive ColourList
   fun tag apply(): Array[Colour] =&gt;
     [Red, Green, Blue]
@@ -574,9 +574,9 @@ type Person is (HasName &amp; HasAge &amp; HasAddress)
 <pre><code class="pony">type Map[K: (Hashable box &amp; Comparable[K] box), V] is HashMap[K, V, HashEq[K]]
 </code></pre>
 
-<p>Unlike our previous example the first type parameter, <code>K</code>, has a type associated with it. This is a <strong>constraint</strong>, which means when you parameterise a <code>Map</code>, the type you pass for <code>K</code> must be a subtype of the constraint.</p>
+<p>Unlike our previous example, the first type parameter, <code>K</code>, has a type associated with it. This is a <strong>constraint</strong>, which means when you parameterise a <code>Map</code>, the type you pass for <code>K</code> must be a subtype of the constraint.</p>
 <p>Also notice that <code>box</code> appears in the type. This is a <strong>reference capability</strong>. It means there is a certain class of operations we need to be able to do on a <code>K</code>. We'll cover this in more detail later.</p>
-<p>Just like our other examples all this really means is that <code>Map</code> is really a kind of <code>HashMap</code>.</p>
+<p>Just like our other examples, all this really means is that <code>Map</code> is really a kind of <code>HashMap</code>.</p>
 <h1 id="other-stuff">Other stuff</h1>
 <p>Type aliases get used for a lot of things, but this gives you the general idea. Just remember that a type alias is always a convenience: you could replace every use of the type alias with the full type after the <code>is</code>.</p>
 <p>In fact, that's exactly what the compiler does.</p>

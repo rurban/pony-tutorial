@@ -534,7 +534,7 @@
     else
       while value != 0 do
         let index = (value = value / base) - (value * base)
-        s.push(table(index))
+        s.push(table(index.usize()))
       end
     end
   end
@@ -549,7 +549,7 @@ end
 
 <p>That's from <code>ToString</code>. It creates a <code>String ref</code>, does a bunch of stuff with it, and finally returns it as a <code>String iso</code>.</p>
 <p>Both of those examples use the default reference capability for a <code>recover</code> expression, since they don't specify one. The default for any mutable reference capability is <code>iso</code> and the default for any immutable reference capability is <code>val</code>. You can also give an explicit one:</p>
-<pre><code class="pony">let key = recover val line.substring(0, i - 1).trim() end
+<pre><code class="pony">let key = recover val line.substring(0, i).strip() end
 </code></pre>
 
 <p>That's from <code>net/http/_PayloadBuilder</code>. We get a substring of <code>line</code>, which is a <code>String iso^</code>, then we call trim on it, which returns itself. But since trim is a <code>ref</code> function, it returns itself as a <code>String ref^</code> - so we use a <code>recover val</code> to end up with a <code>String val</code>.</p>

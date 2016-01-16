@@ -89,6 +89,8 @@
                 
                     <li><a class="toctree-l4" href="#yum">YUM</a></li>
                 
+                    <li><a class="toctree-l4" href="#gentoo">Gentoo</a></li>
+                
             
                 <li class="toctree-l3"><a href="#windows">Windows</a></li>
                 
@@ -364,13 +366,6 @@
           
             <li>
     <li class="toctree-l1 ">
-        <a class="" href="../../packages/package-system/">Package system</a>
-        
-    </li>
-<li>
-          
-            <li>
-    <li class="toctree-l1 ">
         <a class="" href="../../composition-inheritance/code-sharing/">Code sharing</a>
         
     </li>
@@ -399,29 +394,44 @@
 <li>
           
             <li>
+    <ul class="subnav">
+    <li><span>Packages</span></li>
+
+        
+            
     <li class="toctree-l1 ">
-        <a class="" href="../../platform/platform/">Platform</a>
+        <a class="" href="../../packages/package-system/">Package system</a>
         
     </li>
-<li>
-          
-            <li>
+
+        
+            
     <li class="toctree-l1 ">
-        <a class="" href="../../editor-plugins/plugins/">Editor support</a>
+        <a class="" href="../../packages/use-statement/">Use statement</a>
         
     </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../packages/builtin/">Builtin</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../packages/platform/">Use conditions</a>
+        
+    </li>
+
+        
+    </ul>
 <li>
           
             <li>
     <li class="toctree-l1 ">
         <a class="" href="../../compiler-clargs/clargs/">Compiler args</a>
-        
-    </li>
-<li>
-          
-            <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../../patterns/patterns/">Patterns</a>
         
     </li>
 <li>
@@ -458,6 +468,13 @@
             <li>
     <ul class="subnav">
     <li><span>The Runtime</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../runtime/otp/">Otp</a>
+        
+    </li>
 
         
             
@@ -580,6 +597,11 @@ deb http://releases.ponylang.org/apt ponyc-avx2 main
 
 <p>Install <code>ponyc</code> or <code>ponyc-avx2</code>:</p>
 <pre><code class="bash">$ sudo yum install &lt;package-name&gt;
+</code></pre>
+
+<h2 id="gentoo">Gentoo</h2>
+<pre><code class="bash">layman -a stefantalpalaru
+emerge dev-lang/pony
 </code></pre>
 
 <h1 id="windows">Windows</h1>

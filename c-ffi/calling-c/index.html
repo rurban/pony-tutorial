@@ -338,13 +338,6 @@
           
             <li>
     <li class="toctree-l1 ">
-        <a class="" href="../../packages/package-system/">Package system</a>
-        
-    </li>
-<li>
-          
-            <li>
-    <li class="toctree-l1 ">
         <a class="" href="../../composition-inheritance/code-sharing/">Code sharing</a>
         
     </li>
@@ -373,29 +366,44 @@
 <li>
           
             <li>
+    <ul class="subnav">
+    <li><span>Packages</span></li>
+
+        
+            
     <li class="toctree-l1 ">
-        <a class="" href="../../platform/platform/">Platform</a>
+        <a class="" href="../../packages/package-system/">Package system</a>
         
     </li>
-<li>
-          
-            <li>
+
+        
+            
     <li class="toctree-l1 ">
-        <a class="" href="../../editor-plugins/plugins/">Editor support</a>
+        <a class="" href="../../packages/use-statement/">Use statement</a>
         
     </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../packages/builtin/">Builtin</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../packages/platform/">Use conditions</a>
+        
+    </li>
+
+        
+    </ul>
 <li>
           
             <li>
     <li class="toctree-l1 ">
         <a class="" href="../../compiler-clargs/clargs/">Compiler args</a>
-        
-    </li>
-<li>
-          
-            <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../../patterns/patterns/">Patterns</a>
         
     </li>
 <li>
@@ -454,6 +462,13 @@
             <li>
     <ul class="subnav">
     <li><span>The Runtime</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../../runtime/otp/">Otp</a>
+        
+    </li>
 
         
             
@@ -553,12 +568,12 @@ class SSLContext val
 <h1 id="c-types">C types</h1>
 <p>Many C functions require types that don't have an exact equivalent in Pony. A variety of features are provided for these.</p>
 <p>For FFI functions that have no return value (ie they return <code>void</code> in C) the return value specified should be <code>[None]</code>.</p>
-<p>In Pony String is an object with a header and fields, but in C a char* is simply a pointer to character data. The .cstring() function on String provides us with a valid pointer to hand to C. Our fwrite example above makes use of this for the first argument.</p>
+<p>In Pony String is an object with a header and fields, but in C a <code>char*</code> is simply a pointer to character data. The <code>.cstring()</code> function on String provides us with a valid pointer to hand to C. Our fwrite example above makes use of this for the first argument.</p>
 <p>Pony classes corresponds directly to pointers to the class in C.</p>
-<p>For C pointers to simple types, such as U64, the Pony <code>Pointer[]</code> polymorphic type should be used, with a <code>tag</code> reference capability. <code>Pointer[U8] tag</code> should be used for void*. This can be seen in our SSL_CTX_ctrl example above.</p>
-<p>To pass pointers to values to C an ampersand (&amp;) can be used, just like taking an address in C. This is done in the standard library to pass the address of a U64 to an FFI function that takes a uint64_t* as an out parameter:</p>
+<p>For C pointers to simple types, such as U64, the Pony <code>Pointer[]</code> polymorphic type should be used, with a <code>tag</code> reference capability. <code>Pointer[U8] tag</code> should be used for void*. This can be seen in our <code>SSL_CTX_ctrl</code> example above.</p>
+<p>To pass pointers to values to C the <code>addressof</code> operator can be used (previously <code>&amp;</code>), just like taking an address in C. This is done in the standard library to pass the address of a <code>U64</code> to an FFI function that takes a <code>uint64_t*</code> as an out parameter:</p>
 <pre><code class="pony">var len = U64(0)
-@pcre2_substring_length_bynumber_8[I32](_match, i.u32(), &amp;len)
+@pcre2_substring_length_bynumber_8[I32](_match, i.u32(), addressof len)
 </code></pre>
 
 <h2 id="to-read-c-structs-from-ffi">To read c structs from FFI</h2>
@@ -594,7 +609,8 @@ void setEvent(EGLEvent e) {
 </code></pre>
 
 <p>then you call it like this</p>
-<pre><code class="pony">let e: EGLEvent = (4, 0, 0)
+<pre><code class="pony">type EGLEvent is (U8, F32, F32)
+let e: EGLEvent = (4, 0, 0)
 @setEvent[None](e)
 </code></pre>
 
@@ -635,7 +651,7 @@ end
         <a href="../linking-c/" class="btn btn-neutral float-right" title="Linking to C Libraries"/>Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../../patterns/patterns/" class="btn btn-neutral" title="Patterns"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../compiler-clargs/clargs/" class="btn btn-neutral" title="Compiler args"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -661,7 +677,7 @@ end
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../../patterns/patterns/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../../compiler-clargs/clargs/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../linking-c/" style="color: #fcfcfc">Next &raquo;</a></span>
